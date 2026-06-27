@@ -5,21 +5,18 @@ import { supabase } from '@/lib/supabase'
 import { Eye, EyeOff } from 'lucide-react'
 
 export function ProfilePage() {
-  const { user, signOut, refreshUser } = useAuth()
+  const { user, signOut, updateUserMetadata } = useAuth()
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
 
-  // Dados Pessoais (apenas username editável)
   const [username, setUsername] = useState('')
 
-  // Segurança
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
-  // Perfil Espiritual
   const [spiritualProfile, setSpiritualProfile] = useState<any>(null)
 
   useEffect(() => {
@@ -30,7 +27,6 @@ export function ProfilePage() {
       }
       setLoading(true)
 
-      // Carregar perfil espiritual
       const { data: profileData } = await supabase
         .from('user_spiritual_profile')
         .select('*')
@@ -45,7 +41,6 @@ export function ProfilePage() {
     loadProfile()
   }, [user])
 
-  // Salvar Dados Pessoais (apenas username)
   const handleSavePersonalData = async () => {
     if (!user) return
     setSaving(true)
@@ -55,7 +50,8 @@ export function ProfilePage() {
     })
 
     if (!error) {
-      await refreshUser() // Atualiza Topbar e toda a aplicação imediatamente
+      // Atualiza o estado local imediatamente para refletir no Topbar e em toda a aplicação
+      updateUserMetadata({ username })
       alert('Nome de usuário atualizado com sucesso!')
     } else {
       alert('Erro ao salvar: ' + error.message)
@@ -64,7 +60,6 @@ export function ProfilePage() {
     setSaving(false)
   }
 
-  // Alterar Senha com validação
   const handleChangePassword = async () => {
     if (!newPassword || newPassword.length < 8) {
       alert('A nova senha deve ter no mínimo 8 caracteres.')
@@ -93,10 +88,8 @@ export function ProfilePage() {
     window.location.href = '/login'
   }
 
-  // Placeholder para configurar perfil espiritual
   const handleConfigureSpiritualProfile = () => {
-    alert('Abrindo fluxo de onboarding espiritual... (integrar com componente real)')
-    // Aqui poderia navegar para uma rota de onboarding ou abrir modal
+    alert('Abrindo fluxo de onboarding espiritual...')
   }
 
   if (loading) {
@@ -114,7 +107,6 @@ export function ProfilePage() {
         <p className="text-[#A1A1AA] mt-1">Gerencie sua conta</p>
       </div>
 
-      {/* Dados Pessoais - Apenas Username */}
       <div className="bg-[#1C1C1C] border border-[#333333] rounded-3xl p-6">
         <h2 className="text-xl font-semibold mb-4">Dados Pessoais</h2>
 
@@ -152,7 +144,6 @@ export function ProfilePage() {
         </div>
       </div>
 
-      {/* Segurança com toggle de senha */}
       <div className="bg-[#1C1C1C] border border-[#333333] rounded-3xl p-6">
         <h2 className="text-xl font-semibold mb-4">Segurança</h2>
 
@@ -198,7 +189,6 @@ export function ProfilePage() {
         </div>
       </div>
 
-      {/* Perfil Espiritual */}
       <div className="bg-[#1C1C1C] border border-[#333333] rounded-3xl p-6">
         <h2 className="text-xl font-semibold mb-4">Perfil Espiritual</h2>
 
