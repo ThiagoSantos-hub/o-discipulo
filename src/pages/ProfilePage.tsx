@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase'
 import { Eye, EyeOff } from 'lucide-react'
 
 // Componente de Onboarding existente no projeto
-import { OnboardingFlow } from '@/components/OnboardingFlow'
+import { OnboardingFlow } from '@/components/onboarding/OnboardingFlow'
 
 export function ProfilePage() {
   const { user, signOut, refreshUser } = useAuth()
@@ -91,16 +91,13 @@ export function ProfilePage() {
     window.location.href = '/login'
   }
 
-  // Abre o OnboardingFlow existente
   const handleConfigureSpiritualProfile = () => {
     setIsOnboardingOpen(true)
   }
 
-  // Fecha o onboarding e atualiza o perfil
   const handleOnboardingComplete = async () => {
     setIsOnboardingOpen(false)
 
-    // Recarrega os dados do perfil espiritual
     if (user) {
       const { data: profileData } = await supabase
         .from('user_spiritual_profile')
