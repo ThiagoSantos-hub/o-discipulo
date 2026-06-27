@@ -20,7 +20,6 @@ export interface NavItem {
 
 export const navItems: NavItem[] = [
   { label: 'Início', path: '/', icon: Home },
-  { label: 'Explorar', path: '/explorar', icon: Compass },
   { label: 'Minha Biblioteca', path: '/biblioteca', icon: BookOpen },
   { label: 'Sermões', path: '/sermoes', icon: BookText },
   { label: 'Estudos Bíblicos', path: '/estudos', icon: BookOpen },
