@@ -7,6 +7,7 @@ import { AdminLayout } from '@/layouts/AdminLayout'
 import { Dashboard } from '@/pages/admin/Dashboard'
 import { FeedbackPage } from '@/pages/FeedbackPage'
 import { FeedbacksPage } from '@/pages/admin/FeedbacksPage'
+import { ConselheiroEspiritualPage } from '@/pages/ConselheiroEspiritualPage'
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
         <Route path="/estudos" element={<PlaceholderPage title="Estudos Bíblicos" />} />
         <Route path="/professor-ebd" element={<PlaceholderPage title="Professor EBD" />} />
         <Route path="/vida-espiritual" element={<PlaceholderPage title="Vida Espiritual" />} />
+        <Route path="/conselheiro-espiritual" element={<ConselheiroEspiritualPage />} />
         <Route path="/comunidade" element={<PlaceholderPage title="Comunidade" />} />
         <Route path="/conquistas" element={<PlaceholderPage title="Conquistas" />} />
         <Route path="/feedback" element={<FeedbackPage />} />
