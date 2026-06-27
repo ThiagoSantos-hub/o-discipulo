@@ -102,10 +102,7 @@ export function LoginPage() {
             </Link>
           </div>
 
-          <div className="mt-4 text-center text-sm text-[#A1A1AA]">
-            Não tem uma conta?{' '}
-            <Link to="/signup" className="text-[#C9A962] hover:underline">Cadastre-se</Link>
-          </div>
+          {/* Cadastro removido - agora exclusivo do administrador */}
         </div>
       </div>
     </div>
