@@ -1,5 +1,6 @@
 import type { CounselorResponse, CounselorContext, ConversationTurn } from '@/ai/types';
 import { createClient } from '@supabase/supabase-js';
+import { profileService } from '@/services/profile.service';
 
 // Cliente Supabase (usando variáveis de ambiente do Vite)
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
@@ -18,11 +19,18 @@ export const counselorAIService = {
     conversationHistory: ConversationTurn[] = []
   ): Promise<CounselorResponse> {
     try {
+      // Buscar Perfil Espiritual do usuário para enriquecer o contexto
+      let spiritualProfile = null;
+      if (context?.userProfile?.userId) {
+        spiritualProfile = await profileService.getSpiritualProfile(context.userProfile.userId);
+      }
+
       const { data, error } = await supabase.functions.invoke('counselor-chat', {
         body: {
-          userId: context.userProfile.userId,
+          userId: context?.userProfile?.userId,
           message: userMessage,
           context,
+          spiritualProfile,           // ← Novo: Perfil Espiritual enviado automaticamente
           conversationHistory,
         },
       });
@@ -40,8 +48,7 @@ export const counselorAIService = {
       };
     } catch (error) {
       console.error('counselorAIService error:', error);
-      
-      // Fallback em caso de erro
+
       return {
         message: 'Estou aqui para te ouvir. Pode me contar o que está acontecendo?',
         suggestedActions: ['Tentar novamente em alguns instantes'],
