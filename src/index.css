@@ -3,16 +3,82 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --background: #0F0F0F;
+    --foreground: #FFFFFF;
+    --card: #1C1C1C;
+    --card-foreground: #FFFFFF;
+    --popover: #1C1C1C;
+    --popover-foreground: #FFFFFF;
+    --primary: #C9A962;
+    --primary-foreground: #0F0F0F;
+    --secondary: #1C1C1C;
+    --secondary-foreground: #FFFFFF;
+    --muted: #2A2A2A;
+    --muted-foreground: #A1A1AA;
+    --accent: #C9A962;
+    --accent-foreground: #0F0F0F;
+    --destructive: #ef4444;
+    --destructive-foreground: #FFFFFF;
+    --border: #333333;
+    --input: #2A2A2A;
+    --ring: #C9A962;
+    --radius: 0.75rem;
+  }
+
   body {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: #0F0F0F;
     color: #FFFFFF;
   }
-  .premium-card { @apply bg-[#1C1C1C] border border-[#333333] rounded-2xl overflow-hidden shadow-premium; }
-  .section-title { @apply text-2xl font-semibold tracking-tight text-white mb-6; }
-  .skeleton { @apply animate-pulse bg-[#2A2A2A] rounded-xl; }
+
+  /* Premium scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #1C1C1C;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #C9A962;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #D4AF37;
+  }
+
+  /* Smooth transitions for premium feel */
+  * {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
 }
 
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #1C1C1C; }
-::-webkit-scrollbar-thumb { background: #C9A962; border-radius: 3px; }
+/* Custom premium components */
+@layer components {
+  .section-title {
+    @apply text-2xl font-semibold tracking-tight text-white mb-6;
+  }
+
+  .premium-card {
+    @apply bg-[#1C1C1C] border border-[#333333] rounded-2xl overflow-hidden shadow-2xl hover:shadow-xl transition-all duration-300;
+  }
+
+  .nav-link {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all;
+  }
+  
+  .nav-link:hover {
+    @apply bg-[#2A2A2A] text-[#C9A962];
+  }
+  
+  .nav-link.active {
+    @apply bg-[#C9A962] text-[#0F0F0F] font-semibold;
+  }
+
+  .skeleton {
+    @apply animate-pulse bg-[#2A2A2A] rounded-xl;
+  }
+}
