@@ -2,36 +2,39 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { supabase } from '@/lib/supabase'
 import type { User, Session } from '@supabase/supabase-js'
 
+// Tipos
+export interface AuthUser extends User {}
+export interface AuthSession extends Session {}
+
 interface AuthContextType {
-  user: User | null
-  session: Session | null
+  user: AuthUser | null
+  session: AuthSession | null
   loading: boolean
   signUp: (email: string, password: string) => Promise<{ error: any }>
   signIn: (email: string, password: string) => Promise<{ error: any }>
-  signOut: () => Promise<void>
+  signOut: () => Promise<{ error: any }>
   resetPassword: (email: string) => Promise<{ error: any }>
+  getCurrentUser: () => AuthUser | null
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [session, setSession] = useState<Session | null>(null)
+  const [user, setUser] = useState<AuthUser | null>(null)
+  const [session, setSession] = useState<AuthSession | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Verificar sessão atual
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setUser(session?.user ?? null)
+      setSession(session as AuthSession | null)
+      setUser((session?.user as AuthUser) ?? null)
       setLoading(false)
     })
 
-    // Escutar mudanças de autenticação
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        setSession(session)
-        setUser(session?.user ?? null)
+        setSession(session as AuthSession | null)
+        setUser((session?.user as AuthUser) ?? null)
       }
     )
 
@@ -49,17 +52,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signOut = async () => {
-    await supabase.auth.signOut()
-  }
-
-  const resetPassword = async (email: string) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    })
+    const { error } = await supabase.auth.signOut()
     return { error }
   }
 
-  const value = {
+  const resetPassword = async (email: string) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email)
+    return { error }
+  }
+
+  const getCurrentUser = () => user
+
+  const value: AuthContextType = {
     user,
     session,
     loading,
@@ -67,6 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signIn,
     signOut,
     resetPassword,
+    getCurrentUser,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
