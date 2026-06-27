@@ -15,6 +15,7 @@ interface AuthContextType {
   resetPassword: (email: string) => Promise<{ error: any }>
   getCurrentUser: () => AuthUser | null
   refreshUser: () => Promise<void>
+  updateUserMetadata: (metadata: Record<string, any>) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -71,6 +72,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  // Método para atualizar metadados localmente de forma reativa
+  const updateUserMetadata = (metadata: Record<string, any>) => {
+    if (user) {
+      const updatedUser = {
+        ...user,
+        user_metadata: {
+          ...user.user_metadata,
+          ...metadata,
+        },
+      }
+      setUser(updatedUser as AuthUser)
+    }
+  }
+
   const value: AuthContextType = {
     user,
     session,
@@ -81,6 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     resetPassword,
     getCurrentUser,
     refreshUser,
+    updateUserMetadata,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
