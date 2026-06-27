@@ -1,6 +1,5 @@
 import {
   Home,
-  Compass,
   BookOpen,
   BookText,
   Users,
