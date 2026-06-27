@@ -9,24 +9,27 @@ import { FeedbackPage } from '@/pages/FeedbackPage'
 import { FeedbacksPage } from '@/pages/admin/FeedbacksPage'
 import { ConselheiroEspiritualPage } from '@/pages/ConselheiroEspiritualPage'
 import { ProfilePage } from '@/pages/ProfilePage'
+import { AuthProvider } from '@/contexts/AuthContext'
 
 function App() {
   return (
     <Routes>
-      {/* === ÁREA DO USUÁRIO === */}
+      {/* === ÁREA DO USUÁRIO (com AuthProvider) === */}
       <Route
         element={
-          <div className="flex h-screen bg-[#0F0F0F] text-white overflow-hidden">
-            <Sidebar />
-            <div className="flex flex-1 flex-col overflow-hidden">
-              <Topbar />
-              <main className="flex-1 overflow-y-auto p-6 lg:p-8">
-                <div className="mx-auto max-w-7xl">
-                  <Outlet />
-                </div>
-              </main>
+          <AuthProvider>
+            <div className="flex h-screen bg-[#0F0F0F] text-white overflow-hidden">
+              <Sidebar />
+              <div className="flex flex-1 flex-col overflow-hidden">
+                <Topbar />
+                <main className="flex-1 overflow-y-auto p-6 lg:p-8">
+                  <div className="mx-auto max-w-7xl">
+                    <Outlet />
+                  </div>
+                </main>
+              </div>
             </div>
-          </div>
+          </AuthProvider>
         }
       >
         <Route path="/" element={<HomePage />} />
@@ -43,7 +46,7 @@ function App() {
         <Route path="/configuracoes" element={<PlaceholderPage title="Configurações" />} />
       </Route>
 
-      {/* === ÁREA ADMINISTRATIVA === */}
+      {/* === ÁREA ADMINISTRATIVA (sem AuthProvider) === */}
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Dashboard />} />
         <Route path="feedbacks" element={<FeedbacksPage />} />
