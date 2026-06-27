@@ -9,6 +9,39 @@ export function SpiritualCounselorPopup() {
   const [userMessage, setUserMessage] = useState('')
   const navigate = useNavigate()
 
+  // Mock de compromissos do usuário (estrutura preparada para futura integração com Supabase)
+  const userCommitments = {
+    leituraBiblia: { meta: '30 minutos', realizadoHoje: false },
+    oracao: { realizadoHoje: true },
+    devocional: { realizadoHoje: false },
+  }
+
+  // Função para gerar mensagem personalizada baseada nos compromissos
+  const getPersonalizedMessage = () => {
+    const { leituraBiblia, oracao, devocional } = userCommitments
+    const pending = []
+
+    if (!leituraBiblia.realizadoHoje) {
+      pending.push(`dedicar ${leituraBiblia.meta} à leitura da Palavra`)
+    }
+    if (!oracao.realizadoHoje) {
+      pending.push('manter uma vida de oração diária')
+    }
+    if (!devocional.realizadoHoje) {
+      pending.push('fazer seu devocional de hoje')
+    }
+
+    if (pending.length === 0) {
+      return 'Parabéns! Hoje você concluiu todos os compromissos espirituais que definiu. Continue firme na sua caminhada.'
+    }
+
+    if (pending.length === 1) {
+      return `Você assumiu o compromisso de ${pending[0]}. Ainda há tempo para dar esse passo hoje.`
+    }
+
+    return `Hoje você definiu como objetivo ${pending.join(' e ')}. Que tal separar alguns minutos agora?`
+  }
+
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0]
     const lastDismissed = localStorage.getItem('conselheiro_popup_last_dismissed')
@@ -59,14 +92,14 @@ export function SpiritualCounselorPopup() {
     if (currentView === 'welcome') {
       return (
         <>
-          <div className="px-6 pb-6">
-            <div className="space-y-4 text-[#E5E5E5]">
+          <div className="px-4 sm:px-6 pb-5 sm:pb-6">
+            <div className="space-y-3 sm:space-y-4 text-[#E5E5E5]">
               <p className="text-lg font-medium">Bom dia, Thiago!</p>
               <p className="leading-relaxed">
                 Que alegria ver você novamente.
               </p>
               <p className="leading-relaxed">
-                É um novo dia, cheio de misericórdia. Que tal dedicarmos alguns minutos a Deus hoje?
+                {getPersonalizedMessage()}
               </p>
               <p className="leading-relaxed text-[#C9A962]">
                 Vamos fortalecer sua caminhada com Ele?
@@ -74,7 +107,7 @@ export function SpiritualCounselorPopup() {
             </div>
           </div>
 
-          <div className="px-6 pb-6 space-y-3">
+          <div className="px-4 sm:px-6 pb-5 sm:pb-6 space-y-3">
             <button
               onClick={handlePrimaryAction}
               className="w-full h-12 rounded-2xl bg-[#C9A962] hover:bg-[#B8975A] active:bg-[#A07F4A] text-black font-semibold text-base transition-all active:scale-[0.985]"
@@ -90,7 +123,7 @@ export function SpiritualCounselorPopup() {
             </button>
           </div>
 
-          <div className="px-6 pb-6 pt-2 border-t border-[#333333]/60">
+          <div className="px-4 sm:px-6 pb-5 sm:pb-6 pt-2 border-t border-[#333333]/60">
             <label className="flex items-center gap-3 cursor-pointer text-sm text-[#A1A1AA] hover:text-white transition-colors">
               <input
                 type="checkbox"
@@ -108,8 +141,8 @@ export function SpiritualCounselorPopup() {
     if (currentView === 'reflection') {
       return (
         <>
-          <div className="px-6 pb-6">
-            <h3 className="text-xl font-semibold mb-4">Antes de continuar...</h3>
+          <div className="px-4 sm:px-6 pb-5 sm:pb-6">
+            <h3 className="text-xl sm:text-2xl font-semibold mb-4">Antes de continuar...</h3>
             <div className="space-y-4 text-[#E5E5E5] leading-relaxed">
               <p>Você definiu esses objetivos porque deseja crescer na sua caminhada com Deus.</p>
               <p>Gostaria de entender o que está acontecendo em seu coração hoje.</p>
@@ -119,7 +152,7 @@ export function SpiritualCounselorPopup() {
           </div>
 
           {/* Campo de conversa livre */}
-          <div className="px-6 pb-6">
+          <div className="px-4 sm:px-6 pb-5 sm:pb-6">
             <div className="relative">
               <textarea
                 value={userMessage}
@@ -131,7 +164,7 @@ export function SpiritualCounselorPopup() {
             </div>
           </div>
 
-          <div className="px-6 pb-8">
+          <div className="px-4 sm:px-6 pb-6 sm:pb-8">
             <button
               onClick={handleSendMessage}
               disabled={!userMessage.trim()}
@@ -150,15 +183,15 @@ export function SpiritualCounselorPopup() {
     if (currentView === 'thankyou') {
       return (
         <>
-          <div className="px-6 pb-6">
-            <h3 className="text-xl font-semibold mb-4">Obrigado por abrir seu coração.</h3>
+          <div className="px-4 sm:px-6 pb-5 sm:pb-6">
+            <h3 className="text-xl sm:text-2xl font-semibold mb-4">Obrigado por abrir seu coração.</h3>
             <div className="space-y-4 text-[#E5E5E5] leading-relaxed">
               <p>Vou levar o que você compartilhou em oração e consideração nas próximas conversas.</p>
               <p>Lembre-se: as misericórdias do Senhor se renovam a cada manhã (Lamentações 3:22-23). Sempre existe um novo começo em Cristo.</p>
             </div>
           </div>
 
-          <div className="px-6 pb-8 space-y-3">
+          <div className="px-4 sm:px-6 pb-6 sm:pb-8 space-y-3">
             <button
               onClick={() => handleFinalAction(true)}
               className="w-full h-12 rounded-2xl bg-[#C9A962] hover:bg-[#B8975A] active:bg-[#A07F4A] text-black font-semibold text-base transition-all active:scale-[0.985]"
@@ -188,15 +221,15 @@ export function SpiritualCounselorPopup() {
         onClick={closePopup}
       />
 
-      {/* Pop-up Content */}
-      <div className="relative w-full max-w-md rounded-3xl bg-[#0F0F0F] border border-[#333333] shadow-2xl overflow-hidden transform transition-all duration-300 ease-out scale-100 opacity-100">
+      {/* Pop-up Content - Responsivo */}
+      <div className="relative w-full max-w-[92vw] sm:max-w-md max-h-[78vh] rounded-3xl bg-[#0F0F0F] border border-[#333333] shadow-2xl overflow-hidden transform transition-all duration-300 ease-out scale-100 opacity-100 flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-6 pb-4">
+        <div className="flex items-center justify-between px-4 sm:px-6 pt-5 sm:pt-6 pb-3 sm:pb-4 flex-shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-3 rounded-2xl bg-[#C9A962]/10">
               <HeartHandshake className="h-7 w-7 text-[#C9A962]" />
             </div>
-            <h2 className="text-2xl font-semibold tracking-tight">Conselheiro Espiritual</h2>
+            <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">Conselheiro Espiritual</h2>
           </div>
           <button 
             onClick={closePopup}
@@ -207,7 +240,10 @@ export function SpiritualCounselorPopup() {
           </button>
         </div>
 
-        {renderContent()}
+        {/* Conteúdo com rolagem no mobile */}
+        <div className="flex-1 overflow-y-auto">
+          {renderContent()}
+        </div>
       </div>
     </div>
   )
