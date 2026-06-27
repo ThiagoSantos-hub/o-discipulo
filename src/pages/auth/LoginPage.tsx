@@ -21,11 +21,23 @@ export function LoginPage() {
     const { error } = await signIn(email, password)
 
     if (error) {
+      console.error('Erro Supabase Login:', error)
+
       const message = error.message?.toLowerCase() || ''
+      const code = error.code?.toLowerCase() || ''
+
       if (message.includes('invalid login credentials')) {
         setError('E-mail ou senha incorretos.')
+      } else if (message.includes('email not confirmed')) {
+        setError('Confirme seu e-mail antes de entrar.')
+      } else if (message.includes('user not found')) {
+        setError('Usuário não encontrado.')
+      } else if (message.includes('too many requests') || code.includes('rate_limit')) {
+        setError('Muitas tentativas. Aguarde alguns minutos.')
+      } else if (message.includes('fetch') || message.includes('network')) {
+        setError('Erro de conexão. Tente novamente.')
       } else {
-        setError('Ocorreu um erro ao fazer login. Tente novamente.')
+        setError('Erro inesperado ao fazer login.')
       }
     } else {
       navigate('/')
