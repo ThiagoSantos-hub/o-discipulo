@@ -3,6 +3,7 @@ import { Section } from '@/components/Section'
 import { SkeletonCard } from '@/components/SkeletonCard'
 import { Button } from '@/components/ui/Button'
 import { SearchBar } from '@/components/SearchBar'
+
 export function HomePage() {
   return (
     <div className="space-y-10">
