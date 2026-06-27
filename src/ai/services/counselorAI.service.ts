@@ -2,6 +2,7 @@ import type { CounselorResponse, CounselorContext, ConversationTurn } from '@/ai
 import { createClient } from '@supabase/supabase-js';
 import { profileService } from '@/services/profile.service';
 import { prayerService } from '@/services/prayer.service';
+import { readingPlanService } from '@/services/readingPlan.service';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
@@ -17,10 +18,12 @@ export const counselorAIService = {
     try {
       let spiritualProfile = null;
       let recentPrayers: any[] = [];
+      let readingProgress = null;
 
       if (context?.userProfile?.userId) {
         spiritualProfile = await profileService.getSpiritualProfile(context.userProfile.userId);
         recentPrayers = await prayerService.getRecentPrayerRequests(context.userProfile.userId);
+        readingProgress = await readingPlanService.getReadingProgress(context.userProfile.userId);
       }
 
       const { data, error } = await supabase.functions.invoke('counselor-chat', {
@@ -30,6 +33,7 @@ export const counselorAIService = {
           context,
           spiritualProfile,
           recentPrayers,
+          readingProgress,
           conversationHistory,
         },
       });
