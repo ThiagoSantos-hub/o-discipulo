@@ -8,10 +8,18 @@ import { Dashboard } from '@/pages/admin/Dashboard'
 import { FeedbackPage } from '@/pages/FeedbackPage'
 import { FeedbacksPage } from '@/pages/admin/FeedbacksPage'
 import { ConselheiroEspiritualPage } from '@/pages/ConselheiroEspiritualPage'
+import { LoginPage } from '@/pages/auth/LoginPage'
+import { SignupPage } from '@/pages/auth/SignupPage'
+import { ForgotPasswordPage } from '@/pages/auth/ForgotPasswordPage'
 
 function App() {
   return (
     <Routes>
+      {/* === PÁGINAS DE AUTENTICAÇÃO === */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
       {/* === ÁREA DO USUÁRIO === */}
       <Route
         element={
