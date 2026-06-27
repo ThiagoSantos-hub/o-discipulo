@@ -15,7 +15,6 @@ interface AuthContextType {
   resetPassword: (email: string) => Promise<{ error: any }>
   getCurrentUser: () => AuthUser | null
   refreshUser: () => Promise<void>
-  updateUserMetadata: (metadata: Record<string, any>) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -66,23 +65,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const getCurrentUser = () => user
 
   const refreshUser = async () => {
-    const { data: { user: updatedUser } } = await supabase.auth.getUser()
-    if (updatedUser) {
-      setUser(updatedUser as AuthUser)
-    }
-  }
-
-  // Método para atualizar metadados localmente de forma reativa
-  const updateUserMetadata = (metadata: Record<string, any>) => {
-    if (user) {
-      const updatedUser = {
-        ...user,
-        user_metadata: {
-          ...user.user_metadata,
-          ...metadata,
-        },
-      }
-      setUser(updatedUser as AuthUser)
+    const { data } = await supabase.auth.getUser()
+    if (data.user) {
+      setUser(data.user as AuthUser)
     }
   }
 
@@ -96,7 +81,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     resetPassword,
     getCurrentUser,
     refreshUser,
-    updateUserMetadata,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
