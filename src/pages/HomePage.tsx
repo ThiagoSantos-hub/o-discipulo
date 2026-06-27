@@ -34,7 +34,7 @@ export function HomePage() {
         </div>
       </div>
 
-      {/* Quick Search */}
+      {/* Única busca da Home - logo abaixo do Hero */}
       <div className="max-w-2xl">
         <SearchBar 
           placeholder="O que você deseja estudar hoje? (Ex: Romanos 8, Oração, Liderança...)"
