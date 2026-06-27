@@ -14,7 +14,7 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Mobile Hamburger Button - Restored in Header area */}
+      {/* Mobile Hamburger Button - Fixed in Header area */}
       <button
         onClick={() => setIsMobileOpen(!isMobileOpen)}
         className="lg:hidden fixed top-5 left-5 z-50 p-2.5 bg-[#1C1C1C] rounded-xl border border-[#333333] text-[#A1A1AA] hover:text-white transition-colors"
@@ -24,9 +24,9 @@ export function Sidebar() {
 
       {/* Sidebar */}
       <div className={cn("fixed lg:static inset-y-0 left-0 z-40 flex flex-col bg-[#1C1C1C] border-r border-[#333333] transition-all duration-300", isCollapsed ? "w-20" : "w-72", isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0")}>
-        {/* Header - Clean & Premium */}
+        {/* Header - Clean & Premium (no overlapping button) */}
         <div className="flex h-20 items-center justify-between px-6 border-b border-[#333333]">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center pl-2"> {/* Proper left spacing so text doesn't sit too close to edge */}
             {!isCollapsed && (
               <div>
                 <div className="font-semibold text-xl tracking-tight">O Discípulo</div>
