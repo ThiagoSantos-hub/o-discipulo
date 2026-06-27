@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/Button'
+import { BookOpen } from 'lucide-react'
 
 export function LoginPage() {
   const [email, setEmail] = useState('')
@@ -39,7 +40,7 @@ export function LoginPage() {
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
             <div className="h-12 w-12 rounded-2xl bg-[#C9A962] flex items-center justify-center">
-              <span className="text-[#0F0F0F] text-2xl font-bold">✝</span>
+              <BookOpen className="h-6 w-6 text-[#0F0F0F]" />
             </div>
           </div>
           <h1 className="text-3xl font-semibold tracking-tight">Bem-vindo de volta</h1>
