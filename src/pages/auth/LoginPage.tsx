@@ -20,9 +20,12 @@ export function LoginPage() {
     const { error } = await signIn(email, password)
 
     if (error) {
-      setError(error.message === 'Invalid login credentials' 
-        ? 'E-mail ou senha incorretos.' 
-        : 'Ocorreu um erro ao fazer login. Tente novamente.')
+      const message = error.message?.toLowerCase() || ''
+      if (message.includes('invalid login credentials')) {
+        setError('E-mail ou senha incorretos.')
+      } else {
+        setError('Ocorreu um erro ao fazer login. Tente novamente.')
+      }
     } else {
       navigate('/')
     }
