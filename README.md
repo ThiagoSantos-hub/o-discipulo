@@ -1,18 +1,18 @@
 # O Discípulo (BETA)
 
-Plataforma cristã premium para estudar, ensinar e viver a Palavra de Deus.
+**Fase 1 concluída com sucesso!**
 
-**Fase 1** — Estrutura base profissional concluída.
+Fundação profissional do aplicativo cristã premium.
 
-## Stack
 - React 19 + Vite + TypeScript
-- Tailwind CSS + shadcn/ui style
-- React Router, TanStack Query, Framer Motion, Zod, RHF
+- Tema escuro elegante inspirado em streaming
+- Sidebar recolhível + Topbar + Layout responsivo
+- Navegação completa com React Router
+- Componentes reutilizáveis premium
+- Home com Hero + seções com Skeleton Loading
+- Preparado para Supabase, Stripe, IA, Comunidade, Gamificação etc.
 
-## Como rodar
 ```bash
 npm install
 npm run dev
 ```
-
-Interface elegante, dark theme inspirado em streaming, totalmente responsiva e preparada para crescimento.
