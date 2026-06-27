@@ -11,7 +11,6 @@ import { ConselheiroEspiritualPage } from '@/pages/ConselheiroEspiritualPage'
 import { ProfilePage } from '@/pages/ProfilePage'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { LoginPage } from '@/pages/auth/LoginPage'
-import { SignupPage } from '@/pages/auth/SignupPage'
 import { ForgotPasswordPage } from '@/pages/auth/ForgotPasswordPage'
 import { useAuth } from '@/contexts/AuthContext'
 import PrayerNotebookPage from '@/pages/PrayerNotebookPage'
@@ -28,25 +27,26 @@ function App() {
   return (
     <AuthProvider>
       <Routes>
-        {/* === ROTAS DE AUTENTICAÇÃO (sem layout) === */}
+        {/* === ROTAS DE AUTENTICAÇÃO (públicas) === */}
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
-        {/* === ÁREA DO USUÁRIO (com Sidebar + Topbar) === */}
+        {/* === ÁREA DO USUÁRIO (protegida - autenticação obrigatória) === */}
         <Route
           element={
-            <div className="flex h-screen bg-[#0F0F0F] text-white overflow-hidden">
-              <Sidebar />
-              <div className="flex flex-1 flex-col overflow-hidden">
-                <Topbar />
-                <main className="flex-1 overflow-y-auto p-6 lg:p-8">
-                  <div className="mx-auto max-w-7xl">
-                    <Outlet />
-                  </div>
-                </main>
+            <ProtectedRoute>
+              <div className="flex h-screen bg-[#0F0F0F] text-white overflow-hidden">
+                <Sidebar />
+                <div className="flex flex-1 flex-col overflow-hidden">
+                  <Topbar />
+                  <main className="flex-1 overflow-y-auto p-6 lg:p-8">
+                    <div className="mx-auto max-w-7xl">
+                      <Outlet />
+                    </div>
+                  </main>
+                </div>
               </div>
-            </div>
+            </ProtectedRoute>
           }
         >
           <Route path="/" element={<HomePage />} />
@@ -59,13 +59,13 @@ function App() {
           <Route path="/comunidade" element={<PlaceholderPage title="Comunidade" />} />
           <Route path="/conquistas" element={<PlaceholderPage title="Conquistas" />} />
           <Route path="/feedback" element={<FeedbackPage />} />
-          <Route path="/perfil" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-          <Route path="/caderno-oracao" element={<ProtectedRoute><PrayerNotebookPage /></ProtectedRoute>} />
-          <Route path="/plano-leitura" element={<ProtectedRoute><ReadingPlanPage /></ProtectedRoute>} />
+          <Route path="/perfil" element={<ProfilePage />} />
+          <Route path="/caderno-oracao" element={<PrayerNotebookPage />} />
+          <Route path="/plano-leitura" element={<ReadingPlanPage />} />
           <Route path="/configuracoes" element={<PlaceholderPage title="Configurações" />} />
         </Route>
 
-        {/* === ÁREA ADMINISTRATIVA (sem AuthProvider) === */}
+        {/* === ÁREA ADMINISTRATIVA (independente) === */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="feedbacks" element={<FeedbacksPage />} />
