@@ -10,10 +10,12 @@ export function ProfilePage() {
   const [preferredName, setPreferredName] = useState('')
   const [isEditing, setIsEditing] = useState(false)
 
-  // Carregar dados do onboarding
   useEffect(() => {
     const loadData = async () => {
-      if (!user) return
+      if (!user) {
+        setLoading(false)
+        return
+      }
 
       setLoading(true)
       const data = await onboardingService.getOnboardingData(user.id)
@@ -40,7 +42,6 @@ export function ProfilePage() {
 
     if (!error) {
       setIsEditing(false)
-      // Recarregar dados
       const updated = await onboardingService.getOnboardingData(user.id)
       setOnboardingData(updated)
     } else {
@@ -57,6 +58,15 @@ export function ProfilePage() {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
         <div className="text-[#A1A1AA]">Carregando perfil...</div>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="max-w-3xl mx-auto text-center py-12">
+        <h1 className="text-2xl font-semibold mb-4">Acesso restrito</h1>
+        <p className="text-[#A1A1AA]">Você precisa estar logado para acessar esta página.</p>
       </div>
     )
   }
