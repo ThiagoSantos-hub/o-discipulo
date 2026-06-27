@@ -2,10 +2,10 @@ import { createClient } from '@supabase/supabase-js';
 
 import type { UserSpiritualProfile } from '@/ai/types';
 
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 /**
  * Serviço centralizado de Memória Espiritual.
