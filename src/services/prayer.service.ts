@@ -87,4 +87,11 @@ export const prayerService = {
 
     return data || []
   },
+
+  // Método mantido para compatibilidade com SpiritualCounselorPopup
+  async offerToPrayerNotebook(message: string): Promise<boolean> {
+    // Atualmente apenas loga. Futuramente pode criar um pedido automático.
+    console.log('Oferta para Caderno de Oração recebida:', message)
+    return Promise.resolve(true)
+  },
 }
