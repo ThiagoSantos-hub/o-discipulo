@@ -14,31 +14,22 @@ import { LoginPage } from '@/pages/auth/LoginPage'
 import { SignupPage } from '@/pages/auth/SignupPage'
 import { ForgotPasswordPage } from '@/pages/auth/ForgotPasswordPage'
 import { useAuth } from '@/contexts/AuthContext'
+import PrayerNotebookPage from '@/pages/PrayerNotebookPage'
 
-// Componente simples para proteger rotas da área do usuário
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
-
-  if (loading) {
-    return <div className="flex justify-center items-center min-h-screen">Carregando...</div>
-  }
-
-  if (!user) {
-    return <Navigate to="/login" replace />
-  }
-
+  if (loading) return <div className="flex justify-center items-center min-h-screen">Carregando...</div>
+  if (!user) return <Navigate to="/login" replace />
   return <>{children}</>
 }
 
 function App() {
   return (
     <Routes>
-      {/* === ROTAS DE AUTENTICAÇÃO (fora do layout principal) === */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
-      {/* === ÁREA DO USUÁRIO (com AuthProvider) === */}
       <Route
         element={
           <AuthProvider>
@@ -66,18 +57,11 @@ function App() {
         <Route path="/comunidade" element={<PlaceholderPage title="Comunidade" />} />
         <Route path="/conquistas" element={<PlaceholderPage title="Conquistas" />} />
         <Route path="/feedback" element={<FeedbackPage />} />
-        <Route 
-          path="/perfil" 
-          element={
-            <ProtectedRoute>
-              <ProfilePage />
-            </ProtectedRoute>
-          } 
-        />
+        <Route path="/perfil" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+        <Route path="/caderno-oracao" element={<ProtectedRoute><PrayerNotebookPage /></ProtectedRoute>} />
         <Route path="/configuracoes" element={<PlaceholderPage title="Configurações" />} />
       </Route>
 
-      {/* === ÁREA ADMINISTRATIVA (sem AuthProvider) === */}
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Dashboard />} />
         <Route path="feedbacks" element={<FeedbacksPage />} />
