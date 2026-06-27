@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
-import type { CounselorContext, UserSpiritualProfile } from '@/ai/types';
+import type { UserSpiritualProfile } from '@/ai/types';
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
