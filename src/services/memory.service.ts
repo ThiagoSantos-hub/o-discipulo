@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
-import type { UserSpiritualProfile, SpiritualGoal } from '@/ai/types';
+import type { UserSpiritualProfile } from '@/ai/types';
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
@@ -31,21 +31,9 @@ export const memoryService = {
       .eq('user_id', userId)
       .eq('is_active', true);
 
-    // Buscar atividades recentes (últimos 30 dias)
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-    const { data: recentActivities } = await supabase
-      .from('spiritual_activities')
-      .select('activity_type, completed_at')
-      .eq('user_id', userId)
-      .gte('completed_at', thirtyDaysAgo.toISOString())
-      .order('completed_at', { ascending: false });
-
     return {
       ...profileData,
       spiritualGoals: goals || [],
-      // Podemos expandir com mais campos no futuro
     } as UserSpiritualProfile;
   },
 
