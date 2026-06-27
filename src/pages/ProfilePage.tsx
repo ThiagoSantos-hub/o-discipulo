@@ -4,11 +4,15 @@ import { Button } from '@/components/ui/Button'
 import { supabase } from '@/lib/supabase'
 import { Eye, EyeOff } from 'lucide-react'
 
+// Componente de Onboarding existente no projeto
+import { OnboardingFlow } from '@/components/OnboardingFlow'
+
 export function ProfilePage() {
   const { user, signOut, refreshUser } = useAuth()
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState(false)
 
   const [username, setUsername] = useState('')
 
@@ -46,14 +50,11 @@ export function ProfilePage() {
     setSaving(true)
 
     const { error } = await supabase.auth.updateUser({
-      data: {
-        username: username,
-        full_name: username
-      }
+      data: { username, full_name: username }
     })
 
     if (!error) {
-      await refreshUser() // Chama getUser + setUser internamente
+      await refreshUser()
       alert('Nome de usuário atualizado com sucesso!')
     } else {
       alert('Erro ao salvar: ' + error.message)
@@ -90,8 +91,24 @@ export function ProfilePage() {
     window.location.href = '/login'
   }
 
+  // Abre o OnboardingFlow existente
   const handleConfigureSpiritualProfile = () => {
-    alert('Abrindo fluxo de onboarding espiritual...')
+    setIsOnboardingOpen(true)
+  }
+
+  // Fecha o onboarding e atualiza o perfil
+  const handleOnboardingComplete = async () => {
+    setIsOnboardingOpen(false)
+
+    // Recarrega os dados do perfil espiritual
+    if (user) {
+      const { data: profileData } = await supabase
+        .from('user_spiritual_profile')
+        .select('*')
+        .eq('user_id', user.id)
+        .single()
+      setSpiritualProfile(profileData)
+    }
   }
 
   if (loading) {
@@ -115,22 +132,12 @@ export function ProfilePage() {
         <div className="space-y-4">
           <div>
             <label className="block text-sm text-[#A1A1AA] mb-1">Nome de usuário</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full bg-[#0F0F0F] border border-[#333333] rounded-2xl px-4 py-2.5"
-            />
+            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full bg-[#0F0F0F] border border-[#333333] rounded-2xl px-4 py-2.5" />
           </div>
 
           <div>
             <label className="block text-sm text-[#A1A1AA] mb-1">E-mail</label>
-            <input
-              type="email"
-              value={user.email || ''}
-              disabled
-              className="w-full bg-[#0F0F0F] border border-[#333333] rounded-2xl px-4 py-2.5 text-[#A1A1AA] cursor-not-allowed"
-            />
+            <input type="email" value={user.email || ''} disabled className="w-full bg-[#0F0F0F] border border-[#333333] rounded-2xl px-4 py-2.5 text-[#A1A1AA] cursor-not-allowed" />
           </div>
 
           <div>
@@ -152,35 +159,16 @@ export function ProfilePage() {
         <div className="space-y-4">
           <div className="relative">
             <label className="block text-sm text-[#A1A1AA] mb-1">Nova senha</label>
-            <input
-              type={showNewPassword ? 'text' : 'password'}
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full bg-[#0F0F0F] border border-[#333333] rounded-2xl px-4 py-2.5 pr-12"
-              placeholder="Mínimo 8 caracteres"
-            />
-            <button
-              type="button"
-              onClick={() => setShowNewPassword(!showNewPassword)}
-              className="absolute right-4 top-9 text-[#A1A1AA] hover:text-white"
-            >
+            <input type={showNewPassword ? 'text' : 'password'} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="w-full bg-[#0F0F0F] border border-[#333333] rounded-2xl px-4 py-2.5 pr-12" placeholder="Mínimo 8 caracteres" />
+            <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="absolute right-4 top-9 text-[#A1A1AA] hover:text-white">
               {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
 
           <div className="relative">
             <label className="block text-sm text-[#A1A1AA] mb-1">Confirmar nova senha</label>
-            <input
-              type={showConfirmPassword ? 'text' : 'password'}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full bg-[#0F0F0F] border border-[#333333] rounded-2xl px-4 py-2.5 pr-12"
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-4 top-9 text-[#A1A1AA] hover:text-white"
-            >
+            <input type={showConfirmPassword ? 'text' : 'password'} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full bg-[#0F0F0F] border border-[#333333] rounded-2xl px-4 py-2.5 pr-12" />
+            <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-4 top-9 text-[#A1A1AA] hover:text-white">
               {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
@@ -210,6 +198,14 @@ export function ProfilePage() {
       <div>
         <Button variant="outline" className="w-full text-red-400" onClick={handleLogout}>Sair da conta</Button>
       </div>
+
+      {/* OnboardingFlow existente no projeto */}
+      <OnboardingFlow
+        isOpen={isOnboardingOpen}
+        onClose={() => setIsOnboardingOpen(false)}
+        onComplete={handleOnboardingComplete}
+        initialData={spiritualProfile}
+      />
     </div>
   )
 }
