@@ -1,4 +1,4 @@
-import { HeartHandshake, BookOpen, Heart, Award, MessageCircle, Calendar, Users, TrendingUp } from 'lucide-react'
+import { HeartHandshake, BookOpen, Heart, Award, MessageCircle, TrendingUp } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Section } from '@/components/Section'
 
