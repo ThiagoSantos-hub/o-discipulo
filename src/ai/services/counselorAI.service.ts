@@ -2,10 +2,10 @@ import type { CounselorResponse, CounselorContext, ConversationTurn } from '@/ai
 import { createClient } from '@supabase/supabase-js';
 
 // Cliente Supabase (usando variáveis de ambiente do Vite)
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 /**
  * Camada de IA do Conselheiro Espiritual.
