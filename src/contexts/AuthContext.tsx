@@ -25,20 +25,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Recupera a sessão existente ao carregar o app
+    const recoverSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
       setSession(session as AuthSession | null)
       setUser((session?.user as AuthUser) ?? null)
       setLoading(false)
-    })
+    }
 
+    recoverSession()
+
+    // Listener para mudanças de autenticação (login, logout, token refresh)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (event, session) => {
         setSession(session as AuthSession | null)
         setUser((session?.user as AuthUser) ?? null)
+
+        // Opcional: tratar token refreshed ou signed out
+        if (event === 'SIGNED_OUT') {
+          setUser(null)
+          setSession(null)
+        }
       }
     )
 
-    return () => subscription.unsubscribe()
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [])
 
   const signUp = async (email: string, password: string) => {
