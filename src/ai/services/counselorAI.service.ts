@@ -1,32 +1,51 @@
-import type { CounselorResponse, CounselorContext } from '@/ai/types';
+import type { CounselorResponse, CounselorContext, ConversationTurn } from '@/ai/types';
+import { createClient } from '@supabase/supabase-js';
+
+// Cliente Supabase (usando variáveis de ambiente do Vite)
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
 
 /**
  * Camada de IA do Conselheiro Espiritual.
- * Esta camada é responsável por gerar respostas inteligentes.
- * Atualmente utiliza respostas mock. Futuramente integrará com OpenAI via Edge Function do Supabase.
+ * Esta camada chama a Edge Function do Supabase, que por sua vez chama a OpenAI.
  */
 export const counselorAIService = {
   async generateResponse(
     userMessage: string,
-    context: CounselorContext
+    context: CounselorContext,
+    conversationHistory: ConversationTurn[] = []
   ): Promise<CounselorResponse> {
-    // TODO: No futuro, esta função enviará o prompt para uma Edge Function do Supabase
-    // que fará a chamada para a OpenAI usando o system prompt + user prompt + contexto.
-
-    const mockResponse: CounselorResponse = {
-      message: `Obrigado por compartilhar isso, ${context.userProfile.name}. Entendo que você está passando por um momento desafiador. Lembre-se de que Deus está perto dos que têm o coração quebrantado (Salmo 34:18). Quer que conversemos mais sobre isso?`,
-      suggestedVerses: [
-        {
-          reference: 'Salmo 34:18',
-          text: 'O Senhor está perto dos que têm o coração quebrantado e salva os de espírito contrito.',
-          explanation: 'Este versículo nos lembra que Deus não nos abandona nos momentos difíceis.',
+    try {
+      const { data, error } = await supabase.functions.invoke('counselor-chat', {
+        body: {
+          userId: context.userProfile.userId,
+          message: userMessage,
+          context,
+          conversationHistory,
         },
-      ],
-      suggestedActions: ['Ler o Salmo 34 hoje', 'Reservar alguns minutos para oração'],
-      shouldOfferPrayerNotebook: userMessage.length > 60,
-      followUpQuestions: ['Como você está se sentindo agora?', 'Gostaria de orarmos juntos?'],
-    };
+      });
 
-    return Promise.resolve(mockResponse);
+      if (error) {
+        console.error('Error calling counselor-chat function:', error);
+        throw error;
+      }
+
+      return {
+        message: data.message || 'Desculpe, não consegui processar sua mensagem agora.',
+        suggestedVerses: data.suggestedVerses || [],
+        suggestedActions: data.suggestedActions || [],
+        shouldOfferPrayerNotebook: data.shouldOfferPrayerNotebook || false,
+      };
+    } catch (error) {
+      console.error('counselorAIService error:', error);
+      
+      // Fallback em caso de erro
+      return {
+        message: 'Estou aqui para te ouvir. Pode me contar o que está acontecendo?',
+        suggestedActions: ['Tentar novamente em alguns instantes'],
+      };
+    }
   },
 };
