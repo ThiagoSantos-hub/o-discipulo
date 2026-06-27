@@ -1,15 +1,1 @@
-import { Home, Compass, BookOpen, BookText, Users, Heart, Award, User, Settings, Church } from 'lucide-react'
-export interface NavItem { label: string; path: string; icon: React.ComponentType<{ className?: string }> }
-export const navItems: NavItem[] = [
-  { label: 'Início', path: '/', icon: Home },
-  { label: 'Explorar', path: '/explorar', icon: Compass },
-  { label: 'Minha Biblioteca', path: '/biblioteca', icon: BookOpen },
-  { label: 'Sermões', path: '/sermoes', icon: BookText },
-  { label: 'Estudos Bíblicos', path: '/estudos', icon: BookOpen },
-  { label: 'Professor EBD', path: '/professor-ebd', icon: Church },
-  { label: 'Vida Espiritual', path: '/vida-espiritual', icon: Heart },
-  { label: 'Comunidade', path: '/comunidade', icon: Users },
-  { label: 'Conquistas', path: '/conquistas', icon: Award },
-  { label: 'Meu Perfil', path: '/perfil', icon: User },
-  { label: 'Configurações', path: '/configuracoes', icon: Settings },
-]
+...
