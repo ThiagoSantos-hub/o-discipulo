@@ -1,48 +1,26 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { HeartHandshake, X, Send } from 'lucide-react'
+import { counselorService } from '@/services/counselor.service'
+import { prayerService } from '@/services/prayer.service'
+import type { LastConversation } from '@/mocks/counselor.mock'
 
 export function SpiritualCounselorPopup() {
   const [isOpen, setIsOpen] = useState(false)
   const [dontShowToday, setDontShowToday] = useState(false)
   const [currentView, setCurrentView] = useState<'welcome' | 'reflection' | 'thankyou'>('welcome')
   const [userMessage, setUserMessage] = useState('')
+  const [lastConversation, setLastConversation] = useState<LastConversation | null>(null)
+  const [showPrayerOffer, setShowPrayerOffer] = useState(false)
   const navigate = useNavigate()
 
-  // Mock de compromissos do usuário (estrutura preparada para futura integração com Supabase)
-  const userCommitments = {
-    leituraBiblia: { meta: '30 minutos', realizadoHoje: false },
-    oracao: { realizadoHoje: true },
-    devocional: { realizadoHoje: false },
-  }
-
-  // Função para gerar mensagem personalizada baseada nos compromissos
-  const getPersonalizedMessage = () => {
-    const { leituraBiblia, oracao, devocional } = userCommitments
-    const pending = []
-
-    if (!leituraBiblia.realizadoHoje) {
-      pending.push(`dedicar ${leituraBiblia.meta} à leitura da Palavra`)
-    }
-    if (!oracao.realizadoHoje) {
-      pending.push('manter uma vida de oração diária')
-    }
-    if (!devocional.realizadoHoje) {
-      pending.push('fazer seu devocional de hoje')
-    }
-
-    if (pending.length === 0) {
-      return 'Parabéns! Hoje você concluiu todos os compromissos espirituais que definiu. Continue firme na sua caminhada.'
-    }
-
-    if (pending.length === 1) {
-      return `Você assumiu o compromisso de ${pending[0]}. Ainda há tempo para dar esse passo hoje.`
-    }
-
-    return `Hoje você definiu como objetivo ${pending.join(' e ')}. Que tal separar alguns minutos agora?`
-  }
-
   useEffect(() => {
+    const loadData = async () => {
+      const conversation = await counselorService.getLastConversation()
+      setLastConversation(conversation)
+    }
+    loadData()
+
     const today = new Date().toISOString().split('T')[0]
     const lastDismissed = localStorage.getItem('conselheiro_popup_last_dismissed')
 
@@ -62,6 +40,7 @@ export function SpiritualCounselorPopup() {
     setIsOpen(false)
     setCurrentView('welcome')
     setUserMessage('')
+    setShowPrayerOffer(false)
   }
 
   const handlePrimaryAction = () => {
@@ -73,7 +52,18 @@ export function SpiritualCounselorPopup() {
     setCurrentView('reflection')
   }
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
+    if (!userMessage.trim()) return
+
+    // Mostrar oferta do Caderno de Oração após enviar
+    setShowPrayerOffer(true)
+  }
+
+  const handlePrayerNotebookAction = async (sendToNotebook: boolean) => {
+    if (sendToNotebook && userMessage.trim()) {
+      await prayerService.offerToPrayerNotebook(userMessage)
+    }
+    setShowPrayerOffer(false)
     setCurrentView('thankyou')
   }
 
@@ -86,6 +76,14 @@ export function SpiritualCounselorPopup() {
     }
   }
 
+  // Mensagem personalizada com memória da última conversa
+  const getContextualWelcomeMessage = () => {
+    if (lastConversation) {
+      return `Que bom ver você novamente. Na última conversa você compartilhou que estava enfrentando ${lastConversation.topic}. ${lastConversation.followUpQuestion}`
+    }
+    return 'É um novo dia, cheio de misericórdia. Que tal dedicarmos alguns minutos a Deus hoje?'
+  }
+
   if (!isOpen) return null
 
   const renderContent = () => {
@@ -96,10 +94,7 @@ export function SpiritualCounselorPopup() {
             <div className="space-y-3 sm:space-y-4 text-[#E5E5E5]">
               <p className="text-lg font-medium">Bom dia, Thiago!</p>
               <p className="leading-relaxed">
-                Que alegria ver você novamente.
-              </p>
-              <p className="leading-relaxed">
-                {getPersonalizedMessage()}
+                {getContextualWelcomeMessage()}
               </p>
               <p className="leading-relaxed text-[#C9A962]">
                 Vamos fortalecer sua caminhada com Ele?
@@ -151,7 +146,6 @@ export function SpiritualCounselorPopup() {
             </div>
           </div>
 
-          {/* Campo de conversa livre */}
           <div className="px-4 sm:px-6 pb-5 sm:pb-6">
             <div className="relative">
               <textarea
@@ -173,13 +167,34 @@ export function SpiritualCounselorPopup() {
               Enviar
               <Send className="h-4 w-4" />
             </button>
-            <p className="text-center text-xs text-[#666] mt-3">Sua mensagem é confidencial e será considerada nas próximas conversas.</p>
           </div>
+
+          {/* Oferta do Caderno de Oração */}
+          {showPrayerOffer && (
+            <div className="px-4 sm:px-6 pb-6 border-t border-[#333333]/60 pt-5">
+              <p className="text-sm text-[#E5E5E5] mb-4">
+                Obrigado por confiar em nós. Se você desejar, podemos incluir esse pedido no Caderno de Oração da equipe do O Discípulo. Sua mensagem somente será compartilhada caso você autorize.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={() => handlePrayerNotebookAction(true)}
+                  className="flex-1 h-11 rounded-2xl bg-[#C9A962] hover:bg-[#B8975A] text-black font-medium text-sm transition-all"
+                >
+                  Enviar para o Caderno de Oração
+                </button>
+                <button
+                  onClick={() => handlePrayerNotebookAction(false)}
+                  className="flex-1 h-11 rounded-2xl border border-[#333333] hover:bg-white/5 text-white font-medium text-sm transition-all"
+                >
+                  Agora não
+                </button>
+              </div>
+            </div>
+          )}
         </>
       )
     }
 
-    // Thank you view after sending
     if (currentView === 'thankyou') {
       return (
         <>
@@ -215,15 +230,9 @@ export function SpiritualCounselorPopup() {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      {/* Overlay */}
-      <div 
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity duration-300"
-        onClick={closePopup}
-      />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity duration-300" onClick={closePopup} />
 
-      {/* Pop-up Content - Responsivo */}
       <div className="relative w-full max-w-[92vw] sm:max-w-md max-h-[78vh] rounded-3xl bg-[#0F0F0F] border border-[#333333] shadow-2xl overflow-hidden transform transition-all duration-300 ease-out scale-100 opacity-100 flex flex-col">
-        {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-6 pt-5 sm:pt-6 pb-3 sm:pb-4 flex-shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-3 rounded-2xl bg-[#C9A962]/10">
@@ -231,16 +240,11 @@ export function SpiritualCounselorPopup() {
             </div>
             <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">Conselheiro Espiritual</h2>
           </div>
-          <button 
-            onClick={closePopup}
-            className="p-2 rounded-full hover:bg-white/5 transition-colors"
-            aria-label="Fechar"
-          >
+          <button onClick={closePopup} className="p-2 rounded-full hover:bg-white/5 transition-colors" aria-label="Fechar">
             <X className="h-5 w-5 text-[#A1A1AA]" />
           </button>
         </div>
 
-        {/* Conteúdo com rolagem no mobile */}
         <div className="flex-1 overflow-y-auto">
           {renderContent()}
         </div>
