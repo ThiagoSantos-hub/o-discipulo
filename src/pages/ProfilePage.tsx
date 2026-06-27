@@ -1,18 +1,28 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/Button'
-import { onboardingService } from '@/services/onboarding.service'
-import { profileService, SpiritualProfile } from '@/services/profile.service'
+import { supabase } from '@/lib/supabase'
+import { profileService } from '@/services/profile.service'
 
 export function ProfilePage() {
   const { user, signOut } = useAuth()
+
   const [loading, setLoading] = useState(true)
-  const [onboardingData, setOnboardingData] = useState<any>(null)
-  const [spiritualProfile, setSpiritualProfile] = useState<SpiritualProfile | null>(null)
-  const [isEditing, setIsEditing] = useState(false)
+  const [saving, setSaving] = useState(false)
+
+  // Dados Pessoais
+  const [fullName, setFullName] = useState('')
+  const [username, setUsername] = useState('')
+
+  // Segurança
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+
+  // Perfil Espiritual
+  const [spiritualProfile, setSpiritualProfile] = useState<any>(null)
 
   useEffect(() => {
-    const loadData = async () => {
+    const loadProfile = async () => {
       if (!user) {
         setLoading(false)
         return
@@ -20,30 +30,57 @@ export function ProfilePage() {
 
       setLoading(true)
 
-      const [onboarding, profile] = await Promise.all([
-        onboardingService.getOnboardingData(user.id),
-        profileService.ensureProfileExists(user.id, user.user_metadata?.full_name)
-      ])
-
-      setOnboardingData(onboarding)
+      const profile = await profileService.getSpiritualProfile(user.id)
       setSpiritualProfile(profile)
+
+      setFullName(user.user_metadata?.full_name || '')
+      setUsername(user.user_metadata?.username || '')
 
       setLoading(false)
     }
 
-    loadData()
+    loadProfile()
   }, [user])
 
-  const handleSaveSpiritualProfile = async () => {
-    if (!user || !spiritualProfile) return
+  // Salvar Dados Pessoais
+  const handleSavePersonalData = async () => {
+    if (!user) return
+    setSaving(true)
 
-    const { error } = await profileService.createOrUpdateSpiritualProfile(spiritualProfile)
+    const { error } = await supabase.auth.updateUser({
+      data: { full_name: fullName, username: username }
+    })
 
-    if (!error) {
-      setIsEditing(false)
-      alert('Perfil espiritual salvo com sucesso!')
+    setSaving(false)
+
+    if (error) {
+      alert('Erro ao salvar: ' + error.message)
     } else {
-      alert('Erro ao salvar perfil. Tente novamente.')
+      alert('Dados salvos com sucesso!')
+    }
+  }
+
+  // Alterar Senha
+  const handleChangePassword = async () => {
+    if (!newPassword || newPassword.length < 8) {
+      alert('A nova senha deve ter no mínimo 8 caracteres.')
+      return
+    }
+    if (newPassword !== confirmPassword) {
+      alert('A confirmação da senha não coincide.')
+      return
+    }
+
+    setSaving(true)
+    const { error } = await supabase.auth.updateUser({ password: newPassword })
+    setSaving(false)
+
+    if (error) {
+      alert('Erro ao alterar senha: ' + error.message)
+    } else {
+      alert('Senha alterada com sucesso!')
+      setNewPassword('')
+      setConfirmPassword('')
     }
   }
 
@@ -64,65 +101,81 @@ export function ProfilePage() {
     <div className="max-w-3xl mx-auto space-y-8">
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Meu Perfil</h1>
-        <p className="text-[#A1A1AA] mt-1">Gerencie suas informações pessoais e preferências espirituais</p>
+        <p className="text-[#A1A1AA] mt-1">Gerencie sua conta e preferências</p>
       </div>
 
       {/* Dados Pessoais */}
       <div className="bg-[#1C1C1C] border border-[#333333] rounded-3xl p-6">
         <h2 className="text-xl font-semibold mb-4">Dados Pessoais</h2>
-        <div className="space-y-4 text-sm">
-          <div>E-mail: {user.email}</div>
-          <div>Membro desde: {user.created_at ? new Date(user.created_at).toLocaleDateString('pt-BR') : '-'}</div>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm text-[#A1A1AA] mb-1">Nome completo</label>
+            <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} className="w-full bg-[#0F0F0F] border border-[#333333] rounded-2xl px-4 py-2.5" />
+          </div>
+
+          <div>
+            <label className="block text-sm text-[#A1A1AA] mb-1">Nome de usuário</label>
+            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full bg-[#0F0F0F] border border-[#333333] rounded-2xl px-4 py-2.5" />
+          </div>
+
+          <div>
+            <label className="block text-sm text-[#A1A1AA] mb-1">E-mail</label>
+            <input type="email" value={user.email || ''} disabled className="w-full bg-[#0F0F0F] border border-[#333333] rounded-2xl px-4 py-2.5 text-[#A1A1AA] cursor-not-allowed" />
+          </div>
+
+          <div>
+            <label className="block text-sm text-[#A1A1AA] mb-1">Membro desde</label>
+            <div className="bg-[#0F0F0F] border border-[#333333] rounded-2xl px-4 py-2.5 text-[#A1A1AA]">
+              {user.created_at ? new Date(user.created_at).toLocaleDateString('pt-BR') : '-'}
+            </div>
+          </div>
+
+          <Button onClick={handleSavePersonalData} disabled={saving}>
+            {saving ? 'Salvando...' : 'Salvar alterações'}
+          </Button>
+        </div>
+      </div>
+
+      {/* Segurança */}
+      <div className="bg-[#1C1C1C] border border-[#333333] rounded-3xl p-6">
+        <h2 className="text-xl font-semibold mb-4">Segurança</h2>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm text-[#A1A1AA] mb-1">Nova senha</label>
+            <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="w-full bg-[#0F0F0F] border border-[#333333] rounded-2xl px-4 py-2.5" placeholder="Mínimo 8 caracteres" />
+          </div>
+
+          <div>
+            <label className="block text-sm text-[#A1A1AA] mb-1">Confirmar nova senha</label>
+            <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full bg-[#0F0F0F] border border-[#333333] rounded-2xl px-4 py-2.5" />
+          </div>
+
+          <Button onClick={handleChangePassword} disabled={saving}>
+            {saving ? 'Alterando...' : 'Alterar senha'}
+          </Button>
         </div>
       </div>
 
       {/* Perfil Espiritual */}
       <div className="bg-[#1C1C1C] border border-[#333333] rounded-3xl p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Perfil Espiritual</h2>
-          {!isEditing && <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>Editar</Button>}
-        </div>
+        <h2 className="text-xl font-semibold mb-4">Perfil Espiritual</h2>
 
-        {spiritualProfile && (
-          <div className="space-y-4">
-            {isEditing ? (
-              <>
-                <div>
-                  <label className="text-sm text-[#A1A1AA]">Nome</label>
-                  <input type="text" value={spiritualProfile.nome || ''} onChange={(e) => setSpiritualProfile({...spiritualProfile, nome: e.target.value})} className="w-full mt-1 bg-[#0F0F0F] border border-[#333333] rounded-2xl px-4 py-2" />
-                </div>
-                <div>
-                  <label className="text-sm text-[#A1A1AA]">Igreja</label>
-                  <input type="text" value={spiritualProfile.igreja || ''} onChange={(e) => setSpiritualProfile({...spiritualProfile, igreja: e.target.value})} className="w-full mt-1 bg-[#0F0F0F] border border-[#333333] rounded-2xl px-4 py-2" />
-                </div>
-
-                <div className="flex gap-3 mt-4">
-                  <Button onClick={handleSaveSpiritualProfile}>Salvar</Button>
-                  <Button variant="outline" onClick={() => setIsEditing(false)}>Cancelar</Button>
-                </div>
-              </>
-            ) : (
-              <div className="space-y-3 text-sm">
-                <div><span className="text-[#A1A1AA]">Nome:</span> {spiritualProfile.nome || 'Não informado'}</div>
-                <div><span className="text-[#A1A1AA]">Igreja:</span> {spiritualProfile.igreja || 'Não informado'}</div>
-              </div>
-            )}
+        {spiritualProfile ? (
+          <div className="text-sm space-y-2">
+            <p><span className="text-[#A1A1AA]">Nome:</span> {spiritualProfile.nome || 'Não informado'}</p>
+            <p><span className="text-[#A1A1AA]">Igreja:</span> {spiritualProfile.igreja || 'Não informado'}</p>
+          </div>
+        ) : (
+          <div>
+            <p className="text-[#A1A1AA] mb-4">Você ainda não configurou seu perfil espiritual.</p>
+            <Button onClick={() => alert('Abrir fluxo de onboarding')}>Configurar Perfil Espiritual</Button>
           </div>
         )}
       </div>
 
-      {/* Informações do Onboarding */}
-      {onboardingData && (
-        <div className="bg-[#1C1C1C] border border-[#333333] rounded-3xl p-6">
-          <h2 className="text-xl font-semibold mb-4">Preferências do Onboarding</h2>
-          <div className="space-y-2 text-sm">
-            <div>Tempo diário: {onboardingData.daily_time_commitment || 'Não definido'}</div>
-            <div>Horário preferido: {onboardingData.preferred_devotional_time || 'Não definido'}</div>
-          </div>
-        </div>
-      )}
-
-      <div className="bg-[#1C1C1C] border border-[#333333] rounded-3xl p-6">
+      <div>
         <Button variant="outline" className="w-full text-red-400" onClick={handleLogout}>Sair da conta</Button>
       </div>
     </div>
