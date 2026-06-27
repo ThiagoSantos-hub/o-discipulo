@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { HeartHandshake, X } from 'lucide-react'
+import { HeartHandshake, X, Send } from 'lucide-react'
 
 export function SpiritualCounselorPopup() {
   const [isOpen, setIsOpen] = useState(false)
   const [dontShowToday, setDontShowToday] = useState(false)
-  const [currentView, setCurrentView] = useState<'welcome' | 'reflection' | 'response'>('welcome')
-  const [selectedReason, setSelectedReason] = useState<string | null>(null)
+  const [currentView, setCurrentView] = useState<'welcome' | 'reflection' | 'thankyou'>('welcome')
+  const [userMessage, setUserMessage] = useState('')
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -27,9 +27,8 @@ export function SpiritualCounselorPopup() {
       localStorage.setItem('conselheiro_popup_last_dismissed', today)
     }
     setIsOpen(false)
-    // Reset states for next time
     setCurrentView('welcome')
-    setSelectedReason(null)
+    setUserMessage('')
   }
 
   const handlePrimaryAction = () => {
@@ -41,12 +40,12 @@ export function SpiritualCounselorPopup() {
     setCurrentView('reflection')
   }
 
-  const selectReason = (reason: string) => {
-    setSelectedReason(reason)
-    setCurrentView('response')
+  const handleSendMessage = () => {
+    // Mock: apenas avança para a tela de agradecimento
+    setCurrentView('thankyou')
   }
 
-  const handleActionAndClose = (shouldNavigate = false) => {
+  const handleFinalAction = (shouldNavigate = false) => {
     if (shouldNavigate) {
       closePopup()
       navigate('/conselheiro-espiritual')
@@ -57,7 +56,6 @@ export function SpiritualCounselorPopup() {
 
   if (!isOpen) return null
 
-  // Render content based on current view
   const renderContent = () => {
     if (currentView === 'welcome') {
       return (
@@ -113,107 +111,69 @@ export function SpiritualCounselorPopup() {
         <>
           <div className="px-6 pb-6">
             <h3 className="text-xl font-semibold mb-4">Antes de continuar...</h3>
-            <p className="text-[#E5E5E5] leading-relaxed">
-              Você definiu esses objetivos porque deseja crescer na sua caminhada com Deus.
-              O que está impedindo você de dar esse pequeno passo hoje?
-            </p>
+            <div className="space-y-4 text-[#E5E5E5] leading-relaxed">
+              <p>Você definiu esses objetivos porque deseja crescer na sua caminhada com Deus.</p>
+              <p>Gostaria de entender o que está acontecendo hoje.</p>
+              <p>Escreva com sinceridade.</p>
+              <p className="text-[#C9A962]">Não estou aqui para julgar você. Estou aqui para caminhar ao seu lado.</p>
+            </div>
           </div>
 
-          <div className="px-6 pb-8 space-y-2">
-            {[ 
-              { id: 'time', label: 'Estou sem tempo' },
-              { id: 'not-well', label: 'Não estou bem hoje' },
-              { id: 'later', label: 'Faço mais tarde' },
-              { id: 'forgot', label: 'Esqueci' },
-              { id: 'no-answer', label: 'Prefiro não responder' },
-            ].map((option) => (
-              <button
-                key={option.id}
-                onClick={() => selectReason(option.id)}
-                className="w-full text-left px-5 py-3.5 rounded-2xl border border-[#333333] hover:border-[#C9A962]/60 hover:bg-white/5 text-white transition-all active:scale-[0.985]"
-              >
-                {option.label}
-              </button>
-            ))}
+          {/* Campo de conversa livre */}
+          <div className="px-6 pb-6">
+            <div className="relative">
+              <textarea
+                value={userMessage}
+                onChange={(e) => setUserMessage(e.target.value)}
+                placeholder="Conte o que está acontecendo..."
+                rows={4}
+                className="w-full bg-[#1A1A1A] border border-[#333333] rounded-2xl px-5 py-4 text-white placeholder:text-[#666] focus:outline-none focus:border-[#C9A962] resize-y text-[15px] leading-relaxed"
+              />
+            </div>
+          </div>
+
+          <div className="px-6 pb-8">
+            <button
+              onClick={handleSendMessage}
+              disabled={!userMessage.trim()}
+              className="w-full h-12 rounded-2xl bg-[#C9A962] hover:bg-[#B8975A] active:bg-[#A07F4A] disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold text-base flex items-center justify-center gap-2 transition-all active:scale-[0.985]"
+            >
+              Enviar
+              <Send className="h-4 w-4" />
+            </button>
+            <p className="text-center text-xs text-[#666] mt-3">Sua mensagem é confidencial e será considerada nas próximas conversas.</p>
           </div>
         </>
       )
     }
 
-    // Response view
-    if (currentView === 'response' && selectedReason) {
-      let title = ''
-      let message = ''
-      let primaryAction: { label: string; navigate?: boolean } | null = null
-      let secondaryAction: { label: string; navigate?: boolean } | null = null
-
-      switch (selectedReason) {
-        case 'time':
-          title = 'Eu entendo.'
-          message = 'Mesmo cinco minutos dedicados a Deus podem fazer diferença. Que tal começarmos agora?'
-          primaryAction = { label: 'Fazer agora', navigate: true }
-          secondaryAction = { label: 'Continuar mesmo assim' }
-          break
-        case 'not-well':
-          title = 'Obrigado por compartilhar isso.'
-          message = 'Mesmo nos dias difíceis, Deus continua perto de você. Podemos fazer uma oração juntos.'
-          primaryAction = { label: 'Fazer uma oração', navigate: true }
-          secondaryAction = { label: 'Continuar mesmo assim' }
-          break
-        case 'later':
-          title = 'Tudo bem.'
-          message = 'Mais tarde também pode ser um bom momento para cuidar da sua vida espiritual.'
-          primaryAction = { label: 'Definir lembrete' }
-          secondaryAction = { label: 'Continuar mesmo assim' }
-          break
-        case 'forgot':
-          title = 'Acontece.'
-          message = 'Vamos aproveitar que você já está aqui e dar esse pequeno passo?'
-          primaryAction = { label: 'Fazer agora', navigate: true }
-          secondaryAction = { label: 'Continuar mesmo assim' }
-          break
-        case 'no-answer':
-          title = 'Respeito sua decisão.'
-          message = 'Estarei aqui sempre que precisar.'
-          primaryAction = { label: 'Continuar para o aplicativo' }
-          secondaryAction = null
-          break
-      }
-
+    // Thank you view after sending
+    if (currentView === 'thankyou') {
       return (
         <>
           <div className="px-6 pb-6">
-            <h3 className="text-xl font-semibold mb-4">{title}</h3>
-            <p className="text-[#E5E5E5] leading-relaxed">{message}</p>
+            <h3 className="text-xl font-semibold mb-4">Obrigado por confiar em mim.</h3>
+            <div className="space-y-4 text-[#E5E5E5] leading-relaxed">
+              <p>Vou considerar o que você compartilhou nas próximas conversas.</p>
+              <p>Lembre-se de que Deus conhece o seu coração e continua caminhando com você.</p>
+              <p className="text-[#C9A962]">Sempre existe um novo começo.</p>
+            </div>
           </div>
 
           <div className="px-6 pb-8 space-y-3">
-            {primaryAction && (
-              <button
-                onClick={() => handleActionAndClose(primaryAction.navigate)}
-                className="w-full h-12 rounded-2xl bg-[#C9A962] hover:bg-[#B8975A] active:bg-[#A07F4A] text-black font-semibold text-base transition-all active:scale-[0.985]"
-              >
-                {primaryAction.label}
-              </button>
-            )}
+            <button
+              onClick={() => handleFinalAction(true)}
+              className="w-full h-12 rounded-2xl bg-[#C9A962] hover:bg-[#B8975A] active:bg-[#A07F4A] text-black font-semibold text-base transition-all active:scale-[0.985]"
+            >
+              Conversar com o Conselheiro
+            </button>
 
-            {secondaryAction && (
-              <button
-                onClick={() => handleActionAndClose(false)}
-                className="w-full h-12 rounded-2xl border border-[#333333] hover:bg-white/5 text-white font-medium text-base transition-all"
-              >
-                {secondaryAction.label}
-              </button>
-            )}
-
-            {!secondaryAction && (
-              <button
-                onClick={() => handleActionAndClose(false)}
-                className="w-full h-12 rounded-2xl border border-[#333333] hover:bg-white/5 text-white font-medium text-base transition-all"
-              >
-                Continuar para o aplicativo
-              </button>
-            )}
+            <button
+              onClick={() => handleFinalAction(false)}
+              className="w-full h-12 rounded-2xl border border-[#333333] hover:bg-white/5 text-white font-medium text-base transition-all"
+            >
+              Entrar no aplicativo
+            </button>
           </div>
         </>
       )
