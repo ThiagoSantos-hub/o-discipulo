@@ -1,4 +1,4 @@
-import { Routes, Route, Outlet } from 'react-router-dom'
+import { Routes, Route, Outlet, Navigate } from 'react-router-dom'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { Topbar } from '@/components/layout/Topbar'
 import { HomePage } from '@/pages/HomePage'
@@ -10,10 +10,34 @@ import { FeedbacksPage } from '@/pages/admin/FeedbacksPage'
 import { ConselheiroEspiritualPage } from '@/pages/ConselheiroEspiritualPage'
 import { ProfilePage } from '@/pages/ProfilePage'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { LoginPage } from '@/pages/auth/LoginPage'
+import { SignupPage } from '@/pages/auth/SignupPage'
+import { ForgotPasswordPage } from '@/pages/auth/ForgotPasswordPage'
+import { useAuth } from '@/contexts/AuthContext'
+
+// Componente simples para proteger rotas da área do usuário
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth()
+
+  if (loading) {
+    return <div className="flex justify-center items-center min-h-screen">Carregando...</div>
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />
+  }
+
+  return <>{children}</>
+}
 
 function App() {
   return (
     <Routes>
+      {/* === ROTAS DE AUTENTICAÇÃO (fora do layout principal) === */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
       {/* === ÁREA DO USUÁRIO (com AuthProvider) === */}
       <Route
         element={
@@ -42,7 +66,14 @@ function App() {
         <Route path="/comunidade" element={<PlaceholderPage title="Comunidade" />} />
         <Route path="/conquistas" element={<PlaceholderPage title="Conquistas" />} />
         <Route path="/feedback" element={<FeedbackPage />} />
-        <Route path="/perfil" element={<ProfilePage />} />
+        <Route 
+          path="/perfil" 
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          } 
+        />
         <Route path="/configuracoes" element={<PlaceholderPage title="Configurações" />} />
       </Route>
 
