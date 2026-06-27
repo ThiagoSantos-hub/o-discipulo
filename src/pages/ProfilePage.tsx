@@ -3,8 +3,6 @@ import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/Button'
 import { supabase } from '@/lib/supabase'
 import { Eye, EyeOff } from 'lucide-react'
-
-// Componente de Onboarding existente no projeto
 import { OnboardingFlow } from '@/components/onboarding/OnboardingFlow'
 
 export function ProfilePage() {
@@ -12,7 +10,7 @@ export function ProfilePage() {
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [isOnboardingOpen, setIsOnboardingOpen] = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState(false)
 
   const [username, setUsername] = useState('')
 
@@ -92,11 +90,11 @@ export function ProfilePage() {
   }
 
   const handleConfigureSpiritualProfile = () => {
-    setIsOnboardingOpen(true)
+    setShowOnboarding(true)
   }
 
   const handleOnboardingComplete = async () => {
-    setIsOnboardingOpen(false)
+    setShowOnboarding(false)
 
     if (user) {
       const { data: profileData } = await supabase
@@ -196,13 +194,10 @@ export function ProfilePage() {
         <Button variant="outline" className="w-full text-red-400" onClick={handleLogout}>Sair da conta</Button>
       </div>
 
-      {/* OnboardingFlow existente no projeto */}
-      <OnboardingFlow
-        isOpen={isOnboardingOpen}
-        onClose={() => setIsOnboardingOpen(false)}
-        onComplete={handleOnboardingComplete}
-        initialData={spiritualProfile}
-      />
+      {/* OnboardingFlow - renderizado condicionalmente */}
+      {showOnboarding && (
+        <OnboardingFlow onComplete={handleOnboardingComplete} />
+      )}
     </div>
   )
 }
