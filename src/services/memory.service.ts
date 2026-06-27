@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
-import type { UserSpiritualProfile } from '@/ai/types';
+import type { UserSpiritualProfile, SpiritualGoal } from '@/ai/types';
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
@@ -9,20 +9,44 @@ const supabase = createClient(
 
 /**
  * Serviço centralizado de Memória Espiritual.
- * Usado pelo Conselheiro e futuramente por outros módulos.
+ * Responsável por construir e manter o Perfil Espiritual Inteligente do usuário.
  */
 export const memoryService = {
+  /**
+   * Retorna o perfil espiritual completo do usuário com goals e atividades recentes.
+   */
   async getUserSpiritualProfile(userId: string): Promise<UserSpiritualProfile | null> {
-    const { data, error } = await supabase
+    const { data: profileData, error: profileError } = await supabase
       .from('user_spiritual_memory')
       .select('*')
       .eq('user_id', userId)
       .single();
 
-    if (error) return null;
+    if (profileError || !profileData) return null;
 
-    // TODO: Buscar goals, activities, etc. e montar o objeto completo
-    return data as UserSpiritualProfile;
+    // Buscar objetivos espirituais ativos
+    const { data: goals } = await supabase
+      .from('spiritual_goals')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('is_active', true);
+
+    // Buscar atividades recentes (últimos 30 dias)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const { data: recentActivities } = await supabase
+      .from('spiritual_activities')
+      .select('activity_type, completed_at')
+      .eq('user_id', userId)
+      .gte('completed_at', thirtyDaysAgo.toISOString())
+      .order('completed_at', { ascending: false });
+
+    return {
+      ...profileData,
+      spiritualGoals: goals || [],
+      // Podemos expandir com mais campos no futuro
+    } as UserSpiritualProfile;
   },
 
   async getRecentConversationHistory(userId: string, limit = 10) {
