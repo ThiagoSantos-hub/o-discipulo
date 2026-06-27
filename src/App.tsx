@@ -15,6 +15,7 @@ import { SignupPage } from '@/pages/auth/SignupPage'
 import { ForgotPasswordPage } from '@/pages/auth/ForgotPasswordPage'
 import { useAuth } from '@/contexts/AuthContext'
 import PrayerNotebookPage from '@/pages/PrayerNotebookPage'
+import ReadingPlanPage from '@/pages/ReadingPlanPage'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -59,6 +60,7 @@ function App() {
         <Route path="/feedback" element={<FeedbackPage />} />
         <Route path="/perfil" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         <Route path="/caderno-oracao" element={<ProtectedRoute><PrayerNotebookPage /></ProtectedRoute>} />
+        <Route path="/plano-leitura" element={<ProtectedRoute><ReadingPlanPage /></ProtectedRoute>} />
         <Route path="/configuracoes" element={<PlaceholderPage title="Configurações" />} />
       </Route>
 
