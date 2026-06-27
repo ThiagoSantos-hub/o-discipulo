@@ -24,18 +24,24 @@ export function Sidebar() {
 
       {/* Sidebar */}
       <div className={cn("fixed lg:static inset-y-0 left-0 z-40 flex flex-col bg-[#1C1C1C] border-r border-[#333333] transition-all duration-300", isCollapsed ? "w-20" : "w-72", isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0")}>
-        {/* Header - Clean & Premium (no overlapping button) */}
-        <div className="flex h-20 items-center justify-between px-6 border-b border-[#333333]">
-          <div className="flex items-center pl-3">
-            {!isCollapsed && (
-              <div>
-                <div className="font-semibold text-xl tracking-tight">O Discípulo</div>
-                <div className="text-xs text-[#A1A1AA] -mt-0.5">Plataforma Cristã</div>
-              </div>
-            )}
-          </div>
+        {/* Header - Flexbox alignment (definitivo) */}
+        <div className="flex h-20 items-center px-6 border-b border-[#333333] gap-4">
+          {/* Bloco 1: Espaçamento para o botão fixo externo no mobile */}
+          <div className="w-[76px] flex-shrink-0" /> {/* ~72-80px de espaçamento no mobile para não sobrepor o logo/text */}
 
-          <button onClick={toggleCollapse} className="hidden lg:flex h-8 w-8 items-center justify-center rounded-lg hover:bg-[#2A2A2A] text-[#A1A1AA] hover:text-white transition-colors">
+          {/* Bloco 2: Título + Subtítulo (flex: 1) */}
+          {!isCollapsed && (
+            <div className="flex-1 min-w-0">
+              <div className="font-semibold text-xl tracking-tight">O Discípulo</div>
+              <div className="text-xs text-[#A1A1AA] -mt-0.5">Plataforma Cristã</div>
+            </div>
+          )}
+
+          {/* Botão de collapse (desktop) */}
+          <button
+            onClick={toggleCollapse}
+            className="hidden lg:flex h-8 w-8 items-center justify-center rounded-lg hover:bg-[#2A2A2A] text-[#A1A1AA] hover:text-white transition-colors flex-shrink-0"
+          >
             {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </button>
         </div>
