@@ -1,6 +1,4 @@
 import type { CounselorResponse, UserContext, ConversationMessage } from '@/ai/types';
-import { counselorSystemPrompt } from '@/ai/prompts/counselor.system';
-import { buildUserPrompt } from '@/ai/prompts/counselor.user';
 
 /**
  * Serviço responsável por gerar respostas do Conselheiro Espiritual.
@@ -12,14 +10,9 @@ export const counselorAIService = {
     userContext: UserContext,
     conversationHistory: ConversationMessage[] = []
   ): Promise<CounselorResponse> {
-    // Construção dos prompts (preparado para OpenAI)
-    const systemPrompt = counselorSystemPrompt;
-    const userPrompt = buildUserPrompt(userMessage, userContext, conversationHistory);
+    // TODO: Integrar com OpenAI usando counselorSystemPrompt + buildUserPrompt
 
-    // TODO: Substituir por chamada real à OpenAI usando systemPrompt + userPrompt
-    // const response = await openai.chat.completions.create({...});
-
-    // Resposta mock por enquanto (usando os prompts construídos)
+    // Resposta mock por enquanto
     const mockResponse: CounselorResponse = {
       message: `Obrigado por compartilhar isso, ${userContext.name}. Entendo que você está passando por um momento desafiador. Lembre-se de que Deus está perto dos que têm o coração quebrantado (Salmo 34:18). Quer que conversemos mais sobre isso ou prefere que eu ore com você agora?`,
       suggestedVerses: [
