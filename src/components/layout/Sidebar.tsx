@@ -14,16 +14,19 @@ export function Sidebar() {
 
   return (
     <>
+      {/* Mobile Hamburger Button - Restored in Header area */}
+      <button
+        onClick={() => setIsMobileOpen(!isMobileOpen)}
+        className="lg:hidden fixed top-5 left-5 z-50 p-2.5 bg-[#1C1C1C] rounded-xl border border-[#333333] text-[#A1A1AA] hover:text-white transition-colors"
+      >
+        <Menu className="h-5 w-5" />
+      </button>
+
       {/* Sidebar */}
       <div className={cn("fixed lg:static inset-y-0 left-0 z-40 flex flex-col bg-[#1C1C1C] border-r border-[#333333] transition-all duration-300", isCollapsed ? "w-20" : "w-72", isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0")}>
         {/* Header - Clean & Premium */}
         <div className="flex h-20 items-center justify-between px-6 border-b border-[#333333]">
           <div className="flex items-center gap-3">
-            {/* Mobile menu button inside header */}
-            <button onClick={() => setIsMobileOpen(!isMobileOpen)} className="lg:hidden p-2 -ml-2 text-[#A1A1AA] hover:text-white">
-              <Menu className="h-5 w-5" />
-            </button>
-
             {!isCollapsed && (
               <div>
                 <div className="font-semibold text-xl tracking-tight">O Discípulo</div>
