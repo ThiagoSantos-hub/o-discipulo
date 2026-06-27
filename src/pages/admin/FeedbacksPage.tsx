@@ -49,7 +49,7 @@ const mockFeedbacks: Feedback[] = [
 ]
 
 export function FeedbacksPage() {
-  const [feedbacks, setFeedbacks] = useState<Feedback[]>(mockFeedbacks)
+  const [feedbacks] = useState(mockFeedbacks)
   const [selectedFeedback, setSelectedFeedback] = useState<Feedback | null>(null)
   const [adminResponse, setAdminResponse] = useState('')
   const [newStatus, setNewStatus] = useState('')
