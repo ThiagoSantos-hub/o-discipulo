@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/Button'
 import { Section } from '@/components/Section'
 import { SkeletonCard } from '@/components/SkeletonCard'
+import { SpiritualCounselorPopup } from '@/components/SpiritualCounselorPopup'
 
 export function HomePage() {
   return (
@@ -149,6 +150,8 @@ export function HomePage() {
           ))}
         </div>
       </Section>
+
+      <SpiritualCounselorPopup />
     </div>
   )
 }
