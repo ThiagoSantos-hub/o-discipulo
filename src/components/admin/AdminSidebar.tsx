@@ -41,6 +41,7 @@ const adminMenuItems = [
   { label: 'Vida Espiritual', path: '/admin/vida-espiritual', icon: Heart },
   { label: 'Comunidade', path: '/admin/comunidade', icon: Users2 },
   { label: 'Comentários', path: '/admin/comentarios', icon: MessageCircle },
+  { label: 'Feedbacks', path: '/admin/feedbacks', icon: MessageCircle },
   { label: 'Biblioteca', path: '/admin/biblioteca', icon: Library },
   { label: 'Favoritos', path: '/admin/favoritos', icon: Star },
   { label: 'Conquistas', path: '/admin/conquistas', icon: Trophy },
