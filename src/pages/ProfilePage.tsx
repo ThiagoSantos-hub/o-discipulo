@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase'
 import { Eye, EyeOff } from 'lucide-react'
 
 export function ProfilePage() {
-  const { user, signOut, updateUserMetadata } = useAuth()
+  const { user, signOut, refreshUser } = useAuth()
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -46,12 +46,14 @@ export function ProfilePage() {
     setSaving(true)
 
     const { error } = await supabase.auth.updateUser({
-      data: { username }
+      data: {
+        username: username,
+        full_name: username
+      }
     })
 
     if (!error) {
-      // Atualiza o estado local imediatamente para refletir no Topbar e em toda a aplicação
-      updateUserMetadata({ username })
+      await refreshUser() // Chama getUser + setUser internamente
       alert('Nome de usuário atualizado com sucesso!')
     } else {
       alert('Erro ao salvar: ' + error.message)
