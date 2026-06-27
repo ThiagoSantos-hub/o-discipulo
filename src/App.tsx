@@ -26,14 +26,16 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function App() {
   return (
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={<SignupPage />} />
-      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+    <AuthProvider>
+      <Routes>
+        {/* === ROTAS DE AUTENTICAÇÃO (sem layout) === */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
-      <Route
-        element={
-          <AuthProvider>
+        {/* === ÁREA DO USUÁRIO (com Sidebar + Topbar) === */}
+        <Route
+          element={
             <div className="flex h-screen bg-[#0F0F0F] text-white overflow-hidden">
               <Sidebar />
               <div className="flex flex-1 flex-col overflow-hidden">
@@ -45,30 +47,31 @@ function App() {
                 </main>
               </div>
             </div>
-          </AuthProvider>
-        }
-      >
-        <Route path="/" element={<HomePage />} />
-        <Route path="/biblioteca" element={<PlaceholderPage title="Minha Biblioteca" />} />
-        <Route path="/sermoes" element={<PlaceholderPage title="Sermões" />} />
-        <Route path="/estudos" element={<PlaceholderPage title="Estudos Bíblicos" />} />
-        <Route path="/professor-ebd" element={<PlaceholderPage title="Professor EBD" />} />
-        <Route path="/vida-espiritual" element={<PlaceholderPage title="Vida Espiritual" />} />
-        <Route path="/conselheiro-espiritual" element={<ConselheiroEspiritualPage />} />
-        <Route path="/comunidade" element={<PlaceholderPage title="Comunidade" />} />
-        <Route path="/conquistas" element={<PlaceholderPage title="Conquistas" />} />
-        <Route path="/feedback" element={<FeedbackPage />} />
-        <Route path="/perfil" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-        <Route path="/caderno-oracao" element={<ProtectedRoute><PrayerNotebookPage /></ProtectedRoute>} />
-        <Route path="/plano-leitura" element={<ProtectedRoute><ReadingPlanPage /></ProtectedRoute>} />
-        <Route path="/configuracoes" element={<PlaceholderPage title="Configurações" />} />
-      </Route>
+          }
+        >
+          <Route path="/" element={<HomePage />} />
+          <Route path="/biblioteca" element={<PlaceholderPage title="Minha Biblioteca" />} />
+          <Route path="/sermoes" element={<PlaceholderPage title="Sermões" />} />
+          <Route path="/estudos" element={<PlaceholderPage title="Estudos Bíblicos" />} />
+          <Route path="/professor-ebd" element={<PlaceholderPage title="Professor EBD" />} />
+          <Route path="/vida-espiritual" element={<PlaceholderPage title="Vida Espiritual" />} />
+          <Route path="/conselheiro-espiritual" element={<ConselheiroEspiritualPage />} />
+          <Route path="/comunidade" element={<PlaceholderPage title="Comunidade" />} />
+          <Route path="/conquistas" element={<PlaceholderPage title="Conquistas" />} />
+          <Route path="/feedback" element={<FeedbackPage />} />
+          <Route path="/perfil" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+          <Route path="/caderno-oracao" element={<ProtectedRoute><PrayerNotebookPage /></ProtectedRoute>} />
+          <Route path="/plano-leitura" element={<ProtectedRoute><ReadingPlanPage /></ProtectedRoute>} />
+          <Route path="/configuracoes" element={<PlaceholderPage title="Configurações" />} />
+        </Route>
 
-      <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<Dashboard />} />
-        <Route path="feedbacks" element={<FeedbacksPage />} />
-      </Route>
-    </Routes>
+        {/* === ÁREA ADMINISTRATIVA (sem AuthProvider) === */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="feedbacks" element={<FeedbacksPage />} />
+        </Route>
+      </Routes>
+    </AuthProvider>
   )
 }
 
