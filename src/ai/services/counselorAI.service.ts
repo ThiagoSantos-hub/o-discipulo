@@ -1,4 +1,4 @@
-import type { CounselorResponse, UserContext, ConversationMessage } from '@/ai/types';
+import type { CounselorResponse, UserContext } from '@/ai/types';
 
 /**
  * Serviço responsável por gerar respostas do Conselheiro Espiritual.
@@ -7,8 +7,7 @@ import type { CounselorResponse, UserContext, ConversationMessage } from '@/ai/t
 export const counselorAIService = {
   async generateResponse(
     userMessage: string,
-    userContext: UserContext,
-    conversationHistory: ConversationMessage[] = []
+    userContext: UserContext
   ): Promise<CounselorResponse> {
     // TODO: Integrar com OpenAI usando counselorSystemPrompt + buildUserPrompt
 
