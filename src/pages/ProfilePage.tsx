@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/Button'
 import { onboardingService } from '@/services/onboarding.service'
-import { supabase } from '@/lib/supabase'
 
 export function ProfilePage() {
   const { user, signOut } = useAuth()
