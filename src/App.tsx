@@ -8,6 +8,7 @@ import { Dashboard } from '@/pages/admin/Dashboard'
 import { FeedbackPage } from '@/pages/FeedbackPage'
 import { FeedbacksPage } from '@/pages/admin/FeedbacksPage'
 import { ConselheiroEspiritualPage } from '@/pages/ConselheiroEspiritualPage'
+import { ProfilePage } from '@/pages/ProfilePage'
 
 function App() {
   return (
@@ -38,7 +39,7 @@ function App() {
         <Route path="/comunidade" element={<PlaceholderPage title="Comunidade" />} />
         <Route path="/conquistas" element={<PlaceholderPage title="Conquistas" />} />
         <Route path="/feedback" element={<FeedbackPage />} />
-        <Route path="/perfil" element={<PlaceholderPage title="Meu Perfil" />} />
+        <Route path="/perfil" element={<ProfilePage />} />
         <Route path="/configuracoes" element={<PlaceholderPage title="Configurações" />} />
       </Route>
 
