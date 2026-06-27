@@ -6,7 +6,34 @@ import { SkeletonCard } from '@/components/SkeletonCard'
 export function HomePage() {
   return (
     <div className="space-y-10 overflow-x-hidden">
-      {/* Saudacao Personalizada */}
+      {/* Banner Principal Original (Restaurado) */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1C1C1C] via-[#0F0F0F] to-black border border-[#333333] min-h-[360px] md:min-h-[420px] flex items-center py-8 md:py-0">
+        <div className="absolute inset-0 bg-[radial-gradient(#C9A962_0.5px,transparent_1px)] bg-[length:4px_4px] opacity-10" />
+        
+        <div className="relative z-10 px-6 md:px-10 max-w-3xl w-full pb-8 md:pb-0">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tighter leading-[0.9] mb-3 md:mb-4">
+            O Discípulo
+          </h1>
+          <p className="text-xl md:text-2xl lg:text-3xl text-[#C9A962] font-light tracking-tight mb-6 md:mb-8">
+            Tudo o que você precisa para estudar, ensinar e viver a Palavra de Deus em um só lugar.
+          </p>
+
+          <div className="flex flex-col md:flex-row gap-3 w-full">
+            <Button size="lg" className="w-full md:w-auto h-12 md:h-14" asChild>
+              <Link to="/explorar">
+                Começar Agora
+              </Link>
+            </Button>
+            <Button variant="outline" size="lg" className="w-full md:w-auto h-12 md:h-14" asChild>
+              <Link to="/">
+                Continuar Estudando
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Saudacao Personalizada (abaixo do banner) */}
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Bom dia, Pr. Thiago 👋</h1>
         <p className="text-[#A1A1AA] mt-1">Que o Senhor te abençoe hoje. Pronto para crescer na Palavra?</p>
