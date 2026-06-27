@@ -41,7 +41,6 @@ export function SpiritualCounselorPopup() {
   }
 
   const handleSendMessage = () => {
-    // Mock: apenas avança para a tela de agradecimento
     setCurrentView('thankyou')
   }
 
@@ -67,10 +66,10 @@ export function SpiritualCounselorPopup() {
                 Que alegria ver você novamente.
               </p>
               <p className="leading-relaxed">
-                Hoje ainda não registramos seu momento de oração nem sua leitura bíblica.
+                É um novo dia, cheio de misericórdia. Que tal dedicarmos alguns minutos a Deus hoje?
               </p>
               <p className="leading-relaxed text-[#C9A962]">
-                Vamos fortalecer sua caminhada com Deus?
+                Vamos fortalecer sua caminhada com Ele?
               </p>
             </div>
           </div>
@@ -113,9 +112,9 @@ export function SpiritualCounselorPopup() {
             <h3 className="text-xl font-semibold mb-4">Antes de continuar...</h3>
             <div className="space-y-4 text-[#E5E5E5] leading-relaxed">
               <p>Você definiu esses objetivos porque deseja crescer na sua caminhada com Deus.</p>
-              <p>Gostaria de entender o que está acontecendo hoje.</p>
-              <p>Escreva com sinceridade.</p>
-              <p className="text-[#C9A962]">Não estou aqui para julgar você. Estou aqui para caminhar ao seu lado.</p>
+              <p>Gostaria de entender o que está acontecendo em seu coração hoje.</p>
+              <p>Pode compartilhar com sinceridade. Não estou aqui para julgar, mas para caminhar ao seu lado.</p>
+              <p className="text-[#C9A962]">Como diz a Palavra: “Vinde a mim, todos os que estais cansados e oprimidos, e eu vos aliviarei” (Mateus 11:28).</p>
             </div>
           </div>
 
@@ -152,11 +151,10 @@ export function SpiritualCounselorPopup() {
       return (
         <>
           <div className="px-6 pb-6">
-            <h3 className="text-xl font-semibold mb-4">Obrigado por confiar em mim.</h3>
+            <h3 className="text-xl font-semibold mb-4">Obrigado por abrir seu coração.</h3>
             <div className="space-y-4 text-[#E5E5E5] leading-relaxed">
-              <p>Vou considerar o que você compartilhou nas próximas conversas.</p>
-              <p>Lembre-se de que Deus conhece o seu coração e continua caminhando com você.</p>
-              <p className="text-[#C9A962]">Sempre existe um novo começo.</p>
+              <p>Vou levar o que você compartilhou em oração e consideração nas próximas conversas.</p>
+              <p>Lembre-se: as misericórdias do Senhor se renovam a cada manhã (Lamentações 3:22-23). Sempre existe um novo começo em Cristo.</p>
             </div>
           </div>
 
