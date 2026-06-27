@@ -87,7 +87,7 @@ export function ConselheiroEspiritualPage() {
           </div>
           <div className="flex-1">
             <h3 className="font-semibold text-xl mb-3">Mensagem do Conselheiro</h3>
-            <div className="prose prose-invert text-[#E5E5E5] space-y-3">
+            <div className="text-[#E5E5E5] space-y-3">
               <p>Olá!</p>
               <p>Estou feliz em acompanhar sua caminhada com Cristo.</p>
               <p>Todos os dias estarei aqui para incentivar você a crescer na Palavra de Deus, na oração e na comunhão com o Pai.</p>
