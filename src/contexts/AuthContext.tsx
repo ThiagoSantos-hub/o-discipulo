@@ -2,7 +2,6 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { supabase } from '@/lib/supabase'
 import type { User, Session } from '@supabase/supabase-js'
 
-// Tipos
 export interface AuthUser extends User {}
 export interface AuthSession extends Session {}
 
@@ -15,6 +14,7 @@ interface AuthContextType {
   signOut: () => Promise<{ error: any }>
   resetPassword: (email: string) => Promise<{ error: any }>
   getCurrentUser: () => AuthUser | null
+  refreshUser: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -25,7 +25,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Recupera a sessão existente ao carregar o app
     const recoverSession = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       setSession(session as AuthSession | null)
@@ -35,23 +34,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     recoverSession()
 
-    // Listener para mudanças de autenticação (login, logout, token refresh)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session as AuthSession | null)
-        setUser((session?.user as AuthUser) ?? null)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session as AuthSession | null)
+      setUser((session?.user as AuthUser) ?? null)
+    })
 
-        // Opcional: tratar token refreshed ou signed out
-        if (event === 'SIGNED_OUT') {
-          setUser(null)
-          setSession(null)
-        }
-      }
-    )
-
-    return () => {
-      subscription.unsubscribe()
-    }
+    return () => subscription.unsubscribe()
   }, [])
 
   const signUp = async (email: string, password: string) => {
@@ -76,6 +64,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const getCurrentUser = () => user
 
+  const refreshUser = async () => {
+    const { data: { user: updatedUser } } = await supabase.auth.getUser()
+    if (updatedUser) {
+      setUser(updatedUser as AuthUser)
+    }
+  }
+
   const value: AuthContextType = {
     user,
     session,
@@ -85,6 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signOut,
     resetPassword,
     getCurrentUser,
+    refreshUser,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
