@@ -8,10 +8,9 @@ import type { LastConversation } from '@/mocks/counselor.mock'
 export function SpiritualCounselorPopup() {
   const [isOpen, setIsOpen] = useState(false)
   const [dontShowToday, setDontShowToday] = useState(false)
-  const [currentView, setCurrentView] = useState<'welcome' | 'reflection' | 'thankyou'>('welcome')
+  const [currentView, setCurrentView] = useState<'welcome' | 'reflection' | 'prayer-offer' | 'thankyou'>('welcome')
   const [userMessage, setUserMessage] = useState('')
   const [lastConversation, setLastConversation] = useState<LastConversation | null>(null)
-  const [showPrayerOffer, setShowPrayerOffer] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -40,7 +39,6 @@ export function SpiritualCounselorPopup() {
     setIsOpen(false)
     setCurrentView('welcome')
     setUserMessage('')
-    setShowPrayerOffer(false)
   }
 
   const handlePrimaryAction = () => {
@@ -52,18 +50,15 @@ export function SpiritualCounselorPopup() {
     setCurrentView('reflection')
   }
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = () => {
     if (!userMessage.trim()) return
-
-    // Mostrar oferta do Caderno de Oração após enviar
-    setShowPrayerOffer(true)
+    setCurrentView('prayer-offer')
   }
 
   const handlePrayerNotebookAction = async (sendToNotebook: boolean) => {
     if (sendToNotebook && userMessage.trim()) {
       await prayerService.offerToPrayerNotebook(userMessage)
     }
-    setShowPrayerOffer(false)
     setCurrentView('thankyou')
   }
 
@@ -76,7 +71,6 @@ export function SpiritualCounselorPopup() {
     }
   }
 
-  // Mensagem personalizada com memória da última conversa
   const getContextualWelcomeMessage = () => {
     if (lastConversation) {
       return `Que bom ver você novamente. Na última conversa você compartilhou que estava enfrentando ${lastConversation.topic}. ${lastConversation.followUpQuestion}`
@@ -168,30 +162,37 @@ export function SpiritualCounselorPopup() {
               <Send className="h-4 w-4" />
             </button>
           </div>
-
-          {/* Oferta do Caderno de Oração */}
-          {showPrayerOffer && (
-            <div className="px-4 sm:px-6 pb-6 border-t border-[#333333]/60 pt-5">
-              <p className="text-sm text-[#E5E5E5] mb-4">
-                Obrigado por confiar em nós. Se você desejar, podemos incluir esse pedido no Caderno de Oração da equipe do O Discípulo. Sua mensagem somente será compartilhada caso você autorize.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={() => handlePrayerNotebookAction(true)}
-                  className="flex-1 h-11 rounded-2xl bg-[#C9A962] hover:bg-[#B8975A] text-black font-medium text-sm transition-all"
-                >
-                  Enviar para o Caderno de Oração
-                </button>
-                <button
-                  onClick={() => handlePrayerNotebookAction(false)}
-                  className="flex-1 h-11 rounded-2xl border border-[#333333] hover:bg-white/5 text-white font-medium text-sm transition-all"
-                >
-                  Agora não
-                </button>
-              </div>
-            </div>
-          )}
         </>
+      )
+    }
+
+    if (currentView === 'prayer-offer') {
+      return (
+        <div className="px-4 sm:px-6 pb-6 pt-2 animate-[fadeIn_0.2s_ease-out]">
+          <div className="mb-5">
+            <p className="text-[#E5E5E5] leading-relaxed">
+              Obrigado por confiar em nós.<br />
+              Se você desejar, podemos incluir esse pedido no Caderno de Oração da equipe do O Discípulo.<br />
+              Sua mensagem somente será compartilhada caso você autorize.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => handlePrayerNotebookAction(true)}
+              className="w-full h-12 rounded-2xl bg-[#C9A962] hover:bg-[#B8975A] active:bg-[#A07F4A] text-black font-semibold text-base transition-all active:scale-[0.985]"
+            >
+              Enviar para o Caderno de Oração
+            </button>
+
+            <button
+              onClick={() => handlePrayerNotebookAction(false)}
+              className="w-full h-12 rounded-2xl border border-[#333333] hover:bg-white/5 text-white font-medium text-base transition-all"
+            >
+              Agora não
+            </button>
+          </div>
+        </div>
       )
     }
 
